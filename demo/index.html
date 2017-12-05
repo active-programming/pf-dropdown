@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test page</title>
+    <script src="test-page.js"></script>
+</head>
+<body>
+
+    <form>
+
+        <select id="select-1">
+            <option>---</option>
+            <option value="123" data-json='{"json":"object"}'>Option 1</option>
+            <option value="4" data-json='{"json":"object"}'>Option 2</option>
+            <option value="5" data-json='{"json":"object"}'>Option 3</option>
+            <option value="6" data-json='{"json":"object"}'>Option 4</option>
+            <option value="7" data-json='{"json":"object"}'>Option 5</option>
+        </select>
+        <br>
+        <br>
+        <select id="select-2">
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+        </select>
+
+
+        <br>
+        <br>
+        <h3>Default Template</h3>
+        <div class="pf-dropdown">
+            <select style="display:none"><option value="1">1</option><option value="2">2</option></select>
+            <div class="pf-input-frame">
+                <input type="text" class="pf-input" value=""/>
+                <i class="pf-arrow" style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;"></i>
+                <ul class="pf-decorated" style="display:none"><li></li></ul>
+            </div>
+            <div class="pf-dropdown-frame">
+                <ul class="pf-dropdown">
+                    <li>pum purum</li>
+                    <li>pum purum</li>
+                    <li>pum purum</li>
+                </ul>
+            </div>
+        </div>
+
+    </form>
+
+</body>
+</html>

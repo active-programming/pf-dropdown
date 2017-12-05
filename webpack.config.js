@@ -13,7 +13,7 @@ module.exports = function(env) {
                 './src/js/test-page.js'
             ],
             output: {
-                filename: './test/html/test-page.js'
+                filename: './demo/test-page.js'
             },
             module: {
                 loaders: [
