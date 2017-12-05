@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Test page</title>
     <script src="test-page.js"></script>
+    <link href="test-page.css" rel="stylesheet"/>
 </head>
 <body>
 
@@ -17,30 +18,79 @@
             <option value="6" data-json='{"json":"object"}'>Option 4</option>
             <option value="7" data-json='{"json":"object"}'>Option 5</option>
         </select>
-        <br>
+        <br><!-- yes, I use <br>. Any problem? Haha. -->
         <br>
         <select id="select-2">
             <option value="1">Option 1</option>
             <option value="2">Option 2</option>
             <option value="3">Option 3</option>
         </select>
-
-
         <br>
         <br>
-        <h3>Default Template</h3>
+        <h3>Default Template Demo (not css, html only)</h3>
         <div class="pf-dropdown">
             <select style="display:none"><option value="1">1</option><option value="2">2</option></select>
             <div class="pf-input-frame">
                 <input type="text" class="pf-input" value=""/>
-                <i class="pf-arrow" style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;"></i>
+                <a href="#" class="pf-arrow">
+                    <i style="display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;"></i>
+                </a>
                 <ul class="pf-decorated" style="display:none"><li></li></ul>
             </div>
             <div class="pf-dropdown-frame">
                 <ul class="pf-dropdown">
-                    <li>pum purum</li>
-                    <li>pum purum</li>
-                    <li>pum purum</li>
+                    <li class="pf-dropdown-item" data-item_id="1">
+                        <span class="default-item-template">
+                            pum purum
+                        </span>
+                    </li>
+                    <li class="pf-dropdown-item" data-item_id="2">
+                        <span class="default-item-template">
+                            pam param
+                        </span>
+                    </li>
+                    <li class="pf-dropdown-item" data-item_id="3">
+                        <span class="default-item-template">
+                            pim pirim
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br><br><br><br><br>
+        <div class="pf-dropdown">
+            <select style="display:none"><option value="1">1</option><option value="2">2</option></select>
+            <div class="pf-input-frame">
+                <input type="text" class="pf-input" value=""/>
+                <a href="#" class="pf-arrow">
+                    <i style="display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;"></i>
+                </a>
+                <ul class="pf-decorated" style="display:none"><li></li></ul>
+            </div>
+            <div class="pf-dropdown-frame">
+                <ul class="pf-dropdown">
+                    <li class="pf-dropdown-group" data-group_id="1">
+                        <span class="default-group-template">
+                            group title
+                        </span>
+                        <ul class="pf-dropdown-group-items">
+                            <li class="pf-dropdown-item" data-item_id="1">
+                                <span class="default-item-template">
+                                    pum purum
+                                </span>
+                            </li>
+                            <li class="pf-dropdown-item" data-item_id="2">
+                                <span class="default-item-template">
+                                    pam param
+                                </span>
+                            </li>
+                            <li class="pf-dropdown-item" data-item_id="3">
+                                <span class="default-item-template">
+                                    pim pirim
+                                </span>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

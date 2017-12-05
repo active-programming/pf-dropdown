@@ -8,6 +8,9 @@ class pfDropdown {
     {
         this.$original = $(element);
         this.$container = null;
+        this.items = [];
+        this.groups = [];
+        this.templates = this._createDefaultTemplates();
 
         // Default options
         this.settings = $.extend({
@@ -15,58 +18,86 @@ class pfDropdown {
             useOriginalStyles: true,
             displaySelectionAs: 'text', // 'text', 'html'
             autocomplete: false,
-            closeOnSelect: true,
+            minLength: 2, // minimal term size
+            //closeOnSelect: true, // next release, setting of tags
             ajax: {
                 url: '',
                 type: 'get',
                 dataType: 'json',
                 data: this._getTerm,
-                onLoad: function(items) { return items; },
+                onLoad: (items) => { return items; },
             },
-            arrow: {
-                image: '',
-                size: [0, 0],
-            },
+            arrowImage: '',
             rendering: {
                 item: this._renderItem,
-                group: this._renderGroup,
-                container: this._renderContainer
+                group: this._renderGroup
             },
-            onItemOver: function($item, value, data) { },
-            onItemOut: function($item, value, data) { },
-            onItemSelect: function(value, data) { },
-            beforeAddItem: function(value, title, data) { return [value, title, data] },
-            onAddItem: function(value, title, data) { },
-            beforeDeleteItem: function(value, title, data) { return [value, title, data] },
-            onDeleteItem: function(value, title, data) { },
-            onDestroy: function($original) { },
-            onInit: function($original, $container) { }
+            onOverItem: ($item, value, data) => { },
+            onLeaveItem: ($item, value, data) => { },
+            onSelectItem: (value, data) => { },
+            beforeAddItem: (value, title, data) => { return true; },
+            onAddItem: (value, title, data) => { },
+            beforeDeleteItem: (value, title, data) => { return true; },
+            onDeleteItem: (value, title, data) => { },
+            onInit: ($original, $container) => { },
+            onDestroy: ($original) => { }
         }, options);
 
         // load current options of original selector
-        this.items = this._loadOriginalOptions();
+        this._loadOriginalOptions();
 
         // render widget
         this._renderWidget();
 
         // TODO bind events
 
+        this.settings.onInit(this.$original, this.$container);
+    }
 
+
+    _createDefaultTemplates()
+    {
+        let $itemTemplate = $('<span class="pf-dropdown-item" data-item_id="{id}">{title}</span>');
+        let $groupTemplate = $('<span class="pf-dropdown-group" data-group_id="{id}">{label}</span>')
     }
 
 
     _loadOriginalOptions()
     {
-        let items = [];
-        this.$original.find('option').each((i, o) => {
-            let $o = $(o),
-                json = $o.data('json'),
-                data = json ? json : {};
-            data.value = $o.attr('value');
-            data.title = $o.text();
-            items.push(data);
-        });
-        return items;
+        this.groups = [];
+        this.items = [];
+        let $groups = this.$original.find('optgroup');
+        if ($groups.length > 0) {
+            $groups.each((i, g) => {
+                let $g = $(g),
+                    groupLabel = $g.attr('label'),
+                    groupId = groupLabel.toLowerCase().split(' ').join('-'),
+                    json = $g.data('json'),
+                    data = json ? json : {};
+                data.id = groupId;
+                data.label = groupLabel;
+                this.groups.push(data);
+                $g.find('option').each((i, o) => {
+                    let $o = $(o),
+                        json = $o.data('json'),
+                        itemData = json ? json : {};
+                    itemData.group = groupId;
+                    itemData.value = $o.attr('value');
+                    itemData.title = $o.text();
+                    this.items.push(itemData);
+                });
+            });
+        } else {
+            this.$original.find('option').each((i, o) => {
+                let $o = $(o),
+                    json = $o.data('json'),
+                    data = json ? json : {};
+                data.group = '';
+                data.value = $o.attr('value');
+                data.title = $o.text();
+                this.items.push(data);
+            });
+        }
     }
 
 
@@ -93,24 +124,14 @@ class pfDropdown {
     }
 
 
-    _renderArrow()
-    {
-        let $arrow = $('<i class="pf-arrow"></i>');
-        if (this.settings.arrow.image && this.settings.arrow.size[0] > 0 && this.settings.arrow.size[1] > 0) {
-            return $arrow.css('background-image', 'url(' + this.settings.arrow.image + ') center center no-repeat')
-                .css('display', 'inline-block').css('height', this.settings.arrow.size[0]).css('width', this.settings.arrow.size[1]);
-        }
-        return $arrow.attr('style', 'width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;');
-    }
-
-
     /**
+     * @param {Object<jQueryElement>} $defaultTemplate
      * @param {Object} item Item data
      * @param {Object} options Plugin settings
      * @private
      * @return {Object<jQueryElement>}
      */
-    _renderItem(item, options)
+    _renderItem($defaultTemplate, item, options)
     {
         // callbacks: this.settings.onItemOver, this.settings.onItemOut, this.settings.onItemSelect
 
@@ -134,8 +155,14 @@ class pfDropdown {
 
     _renderContainer(itemsHtml, options)
     {
-        let arrow = this._renderArrow();
-
+        let $arrow = $('<a href="#" class="pf-arrow"></a>');
+        if (this.settings.arrowImage) {
+            $arrow.css({display: 'inline-block',
+                backgroundImage: 'url(' + this.settings.arrow.image + ') center center no-repeat'});
+        } else {
+            $arrow.attr('style', 'display:inline-block;width:0;height:0;border-left:'
+                + '5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;');
+        }
     }
 
 
@@ -144,9 +171,12 @@ class pfDropdown {
         //this.$original, this.items, this.$container
 
         if (this.settings.autocomplete) {
+            // если автокомплит, то нужно чтобы поле ввода было активно
 
 
         } else {
+
+            // поле ввода тольк для чтения
 
 
         }
