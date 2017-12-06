@@ -1,4 +1,17 @@
 
+/* original select styles */
+
+select {
+  border: 1px solid #a1d3ff;
+  font-size: 13px;
+  color: red;
+  line-height: 20px;
+  height: 26px;
+  width: 300px;
+  background-color: #fff;
+}
+
+
 $pf-height: 20px;
 
 .pf-dropdown {
@@ -11,11 +24,13 @@ $pf-height: 20px;
     position: relative;
     border: 1px solid gray;
     width: 100%;
+    overflow: hidden;
 
     .pf-input {
       outline: none;
       border: 0;
       height: $pf-height;
+      width: 100%;
     }
     .pf-arrow {
       position: absolute;
@@ -35,6 +50,18 @@ $pf-height: 20px;
         border-top: 5px solid #333;
       }
     }
+    .pf-decorated {
+      position: absolute;
+      width: 100%;
+      min-height: 100%;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        margin: 0;
+        padding: 0;
+      }
+    }
   }
   .pf-dropdown-frame {
     display: block;
@@ -46,13 +73,16 @@ $pf-height: 20px;
     width: 100%;
     overflow: hidden;
 
-    .pf-dropdown {
+    .pf-dropdown-list {
       list-style: none;
       margin: 0;
       padding: 0;
+      width: 100%;
 
       .pf-dropdown-item {
         display: block;
+        padding: 4px;
+        border-bottom: 1px solid #ddd;
       }
       .pf-dropdown-group {
         font-weight: bold;
