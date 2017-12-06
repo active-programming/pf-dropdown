@@ -10,12 +10,12 @@ class pfDropdown {
         this.$container = null;
         this.items = [];
         this.groups = [];
-        this.templates = this._createDefaultTemplates();
 
         // Default options
         this.settings = $.extend({
             containerClass: 'pf-dropdown',
-            useOriginalStyles: true,
+            insertDefaultStyles: true,
+            implementOriginalStyles: true,
             displaySelectionAs: 'text', // 'text', 'html'
             autocomplete: false,
             minLength: 2, // minimal term size
@@ -27,7 +27,6 @@ class pfDropdown {
                 data: this._getTerm,
                 onLoad: (items) => { return items; },
             },
-            arrowImage: '',
             rendering: {
                 item: this._renderItem,
                 group: this._renderGroup
@@ -52,13 +51,6 @@ class pfDropdown {
         // TODO bind events
 
         this.settings.onInit(this.$original, this.$container);
-    }
-
-
-    _createDefaultTemplates()
-    {
-        let $itemTemplate = $('<span class="pf-dropdown-item" data-item_id="{id}">{title}</span>');
-        let $groupTemplate = $('<span class="pf-dropdown-group" data-group_id="{id}">{label}</span>')
     }
 
 
@@ -134,7 +126,7 @@ class pfDropdown {
     _renderItem($defaultTemplate, item, options)
     {
         // callbacks: this.settings.onItemOver, this.settings.onItemOut, this.settings.onItemSelect
-
+        let $itemTemplate = $('<span class="pf-dropdown-item" data-item_id="{id}">{title}</span>');
 
 
     }
@@ -148,20 +140,28 @@ class pfDropdown {
      */
     _renderGroup(group, itemsHtml, options)
     {
-
+        let $groupTemplate = $('<span class="pf-dropdown-group" data-group_id="{id}">{label}</span>');
 
     }
 
 
-    _renderContainer(itemsHtml, options)
+    _renderContainer(itemsHtml, settings)
     {
-        let $arrow = $('<a href="#" class="pf-arrow"></a>');
-        if (this.settings.arrowImage) {
-            $arrow.css({display: 'inline-block',
-                backgroundImage: 'url(' + this.settings.arrow.image + ') center center no-repeat'});
-        } else {
-            $arrow.attr('style', 'display:inline-block;width:0;height:0;border-left:'
-                + '5px solid transparent;border-right:5px solid transparent;border-top:5px solid #333;');
+        this.setDefaultStyles();
+        this.$container = $('<div>').addClass(settings.containerClass).append(
+            $('<div class="pf-input-frame">\n' +
+                '<input type="text" class="pf-input" value=""/>\n' +
+                '<a href="#" class="pf-arrow"><i></i></a>\n' +
+                '<ul class="pf-decorated" style="display:none"><li></li></ul>\n' +
+                '</div>\n' +
+                '<div class="pf-dropdown-frame"><ul class="pf-dropdown"></ul></div>')
+        );
+        this.$container.find('.pf-dropdown').html(itemsHtml);
+        if (this.settings.useOriginalStyles) {
+            let styles = this._getOriginalStyles();
+            for (let key of styles) {
+                this.$container.css(key, styles[key]);
+            }
         }
     }
 
@@ -187,10 +187,7 @@ class pfDropdown {
 
 
         // TODO clone all styles from original <select>
-        if (this.settings.useOriginalStyles) {
-            let styles = this._getOriginalStyles();
-
-        }
+        this._renderContainer(itemsHtml, settings);
     }
 
 
@@ -232,6 +229,17 @@ class pfDropdown {
 
         console.log("set: " + value);
 
+    }
+
+    // helpers
+    setDefaultStyles()
+    {
+        if (this.settings.insertDefaultStyles) {
+            if ($('#pf-default-styles').length > 0)  return;
+
+            // TODO reqire default styles
+
+        }
     }
 
 }
