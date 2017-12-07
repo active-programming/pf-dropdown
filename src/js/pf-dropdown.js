@@ -25,35 +25,36 @@ class pfDropdown {
                 data: this._getTerm,
                 onLoad: (items) => {
                     return items;
-                },
+                }
             },
-            rendering: {
-                item: null, // (item, settings) => { return $('<tags>'); },
-                group: null // (group, $items, settings) => { return $('<tags>'); },
-            },
+            // plugins extensions
+            plugins: [
+                // TODO plugin as object with callbacks methods (ex. PluginClass.onRendered, PluginClass.onAddItem, ...)
+                // new PluginClass()
+            ],
+            // callbacks
+            onRendered: null, // ($original, $container) => { },
+            renderItem: null, // (item, settings) => { return $('<tags>'); },
+            renderGroup: null, // (group, $items, settings) => { return $('<tags>'); },
             onOverItem: null, // ($item, item) => { },
             onLeaveItem: null, // ($item, item) => { },
             onSelectItem: null, // (item) => { },
             beforeAddItem: null, // (item) => { return true; },
-            onAddItem: null, // (item) => { },
-            beforeDeleteItem: null, //(item) => { return true; },
-            onDeleteItem: null, // (item) => { },
-            onRendered: null, // ($original, $container) => { },
-            onDestroy: null, // ($original) => { }
+            onAddItem: null, // ($item, item) => { },
+            beforeDeleteItem: null, //($item, item) => { return true; },
+            onDeleteItem: null // (item) => { },
         }, options);
 
         // load current options of original selector
         this._loadOriginalOptions();
         // render widget
-        this._renderWidget();
+        this._renderWidget(this.items, this.groups);
         // trigger event
         if ($.isFunction(this.settings.onRendered)) this.settings.onRendered(this.$original, this.$container);
     }
 
 
     _loadOriginalOptions() {
-        this.items = [];
-        this.groups = [];
         let currentValue = this.$original.find('option:selected').attr('value'),
             $groups = this.$original.find('optgroup');
         currentValue = currentValue ? currentValue : '';
@@ -147,48 +148,35 @@ class pfDropdown {
     }
 
 
-    _renderWidget()
+    /**
+     * @param {Object} items
+     * @param {Object} groups
+     * @private
+     */
+    _renderWidget(items, groups)
     {
+        let $listItems;
         this._renderContainer();
-        if (this.groups.length > 0) {
+        if (groups.length > 0) {
             // if there are groups
-            let $groups = [];
-            for (let group of this.groups) {
-                let $items = [];
-                for (let item of this.items) {
-                    if (item.group == group.id) {
-                        let $item = this._renderItem(item);
-                        if ($item instanceof $) {
-                            $items.push($item);
-                        }
-                    }
-                }
-                let $group = this._renderGroup(group, $items);
+            $listItems = $([]);
+            for (let group of groups) {
+                let $items = this._renderItems(items, group.id),
+                    $group = this._renderGroup(group, $items);
                 if ($group instanceof $) {
-                    $groups.push($group);
+                    $listItems = $listItems.add($group);
                 }
-                this.$container.find('.pf-dropdown-list').html($groups);
             }
         } else {
             // if there are no groups
-            if (this.items.length > 0) {
-                let $items = [];
-                for (let item of this.items) {
-                    let $item = this._renderItem(item);
-                    if ($item instanceof $) {
-                        $items.push($item);
-                    }
-                }
-                this.$container.find('.pf-dropdown-list').html($items);
-            }
+            $listItems = this._renderItems(items);
         }
+        this.$container.find('.pf-dropdown-list').html($listItems);
         // set current item
         let item = this._getSelectedItem();
         if (item !== null) {
             let $item = this._renderItem(item);
-            if ($item !== false) {
-                this._onSelectItem($item, item, false);
-            }
+            if ($item !== false)  this._onSelectItem($item, item, false);
         }
         // bind events
         this.$container.find('.pf-input-frame').on('click', (event) => {
@@ -201,11 +189,9 @@ class pfDropdown {
             this.$container.find('.pf-input').on('keypress keyup keydown', (event) => this.$original.trigger(event));
         }
         $('body').on('click', () => {
-            console.log('body click');
             this.$container.find('.pf-dropdown-frame').css('display', 'none');
         });
         $('body').on('pf-dropdown-click', () => {
-            console.log('event: pf-dropdown-click');
             this.$container.find('.pf-dropdown-frame').css('display', 'none');
         });
     }
@@ -239,6 +225,29 @@ class pfDropdown {
 
 
     /**
+     * @param {number} groupId
+     * @returns {*}
+     * @private
+     */
+    _renderItems(items, groupId = -1)
+    {
+        if (items.length > 0) {
+            let $items = $([]);
+            for (let item of items) {
+                if (groupId < 0 || (groupId >= 0 && item.group == groupId)) {
+                    let $item = this._renderItem(item);
+                    if ($item instanceof $) {
+                        $items = $items.add($item);
+                    }
+                }
+            }
+            return $items;
+        }
+        return null;
+    }
+
+
+    /**
      * @param {Object<jQueryElement>} $defaultTemplate
      * @param {Object} item Item {title: title, value: value, data: {}}
      * @param {Object} options Plugin settings
@@ -254,8 +263,8 @@ class pfDropdown {
         let $item = $('<li class="pf-dropdown-item" data-item_value="">{inner}</li>'),
             $inner = null;
         $item.attr('data-item_value', item.value);
-        if ($.isFunction(this.settings.rendering.item)) {
-            $inner = this.settings.rendering.item(item, this.settings);
+        if ($.isFunction(this.settings.renderIitem)) {
+            $inner = this.settings.renderItem(item, this.settings);
         }
         if (!($inner instanceof $)) {
             $inner = $('<span class="default-item-template"></span>');
@@ -266,24 +275,22 @@ class pfDropdown {
         $item.hover(
             (event) => {
                 if ($.isFunction(this.settings.onOverItem)) {
-                    let $item = $(event.target),
+                    let $item = $(event.currentTarget),
                         data = this._getItemByValue($item.data('item_value'));
                     this.settings.onOverItem($item, data);
                 }
             },
             (event) => {
                 if ($.isFunction(this.settings.onLeaveItem)) {
-                    let $item = $(event.target),
+                    let $item = $(event.currentTarget),
                         data = this._getItemByValue($item.data('item_value'));
                     this.settings.onLeaveItem($item, data);
                 }
             }
         );
         $item.on('click', (event) => {
-            // todo delete console
-            console.log('click item', event.target, data);
-            let data = this._getItemByValue($(event.target).data('item_value'));
-            this._onSelectItem($(event.target), data);
+            let data = this._getItemByValue($(event.currentTarget).data('item_value'));
+            this._onSelectItem($(event.currentTarget), data);
             if ($.isFunction(this.settings.onSelectItem)) {
                 this.settings.onSelectItem(data);
             }
@@ -299,9 +306,9 @@ class pfDropdown {
      */
     _renderGroup(group, $items)
     {
-        let $group = null;
-        if ($.isFunction(this.settings.rendering.item)) {
-            $group = this.settings.rendering.group(group, $items, this.settings);
+        let $group;
+        if ($.isFunction(this.settings.renderGroup)) {
+            $group = this.settings.renderGroup(group, $items, this.settings);
         }
         if (!($group instanceof $)) {
             $group = $(
@@ -310,7 +317,9 @@ class pfDropdown {
                     <ul class="pf-dropdown-group-items"></ul>
                 </li>`
             );
-            $group.find('.pf-dropdown-group-items').html($items);
+            if ($items instanceof $) {
+                $group.find('.pf-dropdown-group-items').html($items);
+            }
         }
         return $group;
     }
@@ -318,8 +327,6 @@ class pfDropdown {
 
     _toggleDropdown()
     {
-        // todo delete console
-        console.log('_toggleDropdown');
         $('body').trigger('pf-dropdown-click');
         let $dropdown = this.$container.find('.pf-dropdown-frame');
         if ($dropdown.css('display') !== 'none') {

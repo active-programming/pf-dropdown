@@ -1,5 +1,6 @@
 import './pf-dropdown';
 import 'jquery';
+import PluginExample from './plugin-example';
 require('!style-loader!css-loader!../../distr/css/default.css');
 
 $(function($) {
@@ -19,12 +20,15 @@ $(function($) {
         },
         onSelectItem: function (data) {
             //console.log('selected', data);
-        }
+        },
+        plugins: [
+            new PluginExample()
+        ]
     });
 
     // test of proxy events
     $('#select-1').on('keypress keyup keydown', function(event) {
-        console.log('select-1', event);
+        //console.log('select-1', event);
     });
 
     $('#select-2').pfDropdown({
