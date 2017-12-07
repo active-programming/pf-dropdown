@@ -1,16 +1,15 @@
 import './pf-dropdown';
 import 'jquery';
+require('!style-loader!css-loader!../../distr/css/default.css');
 
 $(function($) {
-
-    console.log("HEY!");
 
     $('#select-1').pfDropdown({
         containerClass: 'pf-dropdown',
         useOriginalStyles: true,
         autocomplete: true,
         onRendered: function ($original, $container) {
-            console.log('RENDERED!', $original[0]);
+            //console.log('RENDERED!', $original[0]);
         },
         onOverItem: function ($item, data) {
             //console.log('over', $item, data);
@@ -21,6 +20,11 @@ $(function($) {
         onSelectItem: function (data) {
             //console.log('selected', data);
         }
+    });
+
+    // test of proxy events
+    $('#select-1').on('keypress keyup keydown', function(event) {
+        console.log('select-1', event);
     });
 
     $('#select-2').pfDropdown({

@@ -4,8 +4,7 @@ import plugin from './plugin';
 
 class pfDropdown {
 
-    constructor(element, options = {})
-    {
+    constructor(element, options = {}) {
         this.$original = $(element);
         this.$container = null;
         this.groups = [];
@@ -14,7 +13,6 @@ class pfDropdown {
         // Default options
         this.settings = $.extend({
             containerClass: 'pf-dropdown',
-            insertDefaultStyles: true,
             implementOriginalStyles: true,
             displaySelectionAs: 'text', // 'text', 'html'
             autocomplete: false,
@@ -25,58 +23,59 @@ class pfDropdown {
                 type: 'get',
                 dataType: 'json',
                 data: this._getTerm,
-                onLoad: (items) => { return items; },
+                onLoad: (items) => {
+                    return items;
+                },
             },
             rendering: {
-                item: null, // (item, options) => { return $('<tags>'); },
-                group: null // (group, options) => { return $('<tags>'); },
+                item: null, // (item, settings) => { return $('<tags>'); },
+                group: null // (group, $items, settings) => { return $('<tags>'); },
             },
-            onOverItem: null, // ($item, data) => { },
-            onLeaveItem: null, // ($item, data) => { },
-            onSelectItem: null, // (data) => { },
-            beforeAddItem: null, // (data) => { return true; },
-            onAddItem: null, // (data) => { },
-            beforeDeleteItem: null, //(data) => { return true; },
-            onDeleteItem: null, // (data) => { },
+            onOverItem: null, // ($item, item) => { },
+            onLeaveItem: null, // ($item, item) => { },
+            onSelectItem: null, // (item) => { },
+            beforeAddItem: null, // (item) => { return true; },
+            onAddItem: null, // (item) => { },
+            beforeDeleteItem: null, //(item) => { return true; },
+            onDeleteItem: null, // (item) => { },
             onRendered: null, // ($original, $container) => { },
             onDestroy: null, // ($original) => { }
         }, options);
 
         // load current options of original selector
         this._loadOriginalOptions();
-
         // render widget
-        if (this._renderWidget()) {
-            // trigger event
-            if ($.isFunction(this.settings.onRendered))  this.settings.onRendered(this.$original, this.$container);
-        }
+        this._renderWidget();
+        // trigger event
+        if ($.isFunction(this.settings.onRendered)) this.settings.onRendered(this.$original, this.$container);
     }
 
 
-    _loadOriginalOptions()
-    {
+    _loadOriginalOptions() {
         this.items = [];
         this.groups = [];
-        let $groups = this.$original.find('optgroup'),
-            itemsLoopFn = ($options, groupId) => {
-                $options.each((_, o) => {
-                    let $o = $(o),
-                        json = $o.data('json'),
-                        itemData = json ? json : {};
-                    itemData.id = this.items.length;
-                    itemData.group = groupId;
-                    itemData.value = $o.attr('value');
-                    itemData.title = $o.text();
-                    this.items.push(itemData);
+        let currentValue = this.$original.find('option:selected').attr('value'),
+            $groups = this.$original.find('optgroup');
+        currentValue = currentValue ? currentValue : '';
+        let itemsLoopFn = ($options, groupId) => {
+            $options.each((_, o) => {
+                let $o = $(o),
+                    dataset = $o.data('set'),
+                    value = $o.attr('value') ? $o.attr('value') : '';
+                this.items.push({
+                    group: groupId,
+                    value: value,
+                    title: $o.text() ? $o.text() : '',
+                    selected: (currentValue == value) ? true : false,
+                    data: dataset ? dataset : {}
                 });
-            };
+            });
+        };
         if ($groups.length > 0) {
             $groups.each((_, g) => {
-                this.groups.push({
-                    id: this.groups.length,
-                    label: $(g).attr('label')
-                });
-                itemsLoopFn($g.find('option'), groupId);
+                let groupId = this.groups.length;
+                this.groups.push({id: groupId, label: $(g).attr('label')});
+                itemsLoopFn($(g).find('option'), groupId);
             });
         } else {
             itemsLoopFn(this.$original.find('option'), '');
@@ -84,11 +83,23 @@ class pfDropdown {
     }
 
 
-    _getItemById(id)
+    _getSelectedItem()
+    {
+        // todo multiple?
+        if (this.items.length > 0) {
+            for (let item of this.items) {
+                if (item.selected)  return item;
+            }
+        }
+        return null;
+    }
+
+
+    _getItemByValue(value)
     {
         if (this.items.length > 0) {
             for (let item of this.items) {
-                if (item.id == id) return item;
+                if (item.value == value) return item;
             }
         }
         return null;
@@ -102,71 +113,7 @@ class pfDropdown {
     }
 
 
-    /**
-     * @param {Object<jQueryElement>} $defaultTemplate
-     * @param {Object} item Item {title: title, value: value, data: {}}
-     * @param {Object} options Plugin settings
-     * @private
-     * @return {Object<jQueryElement>}
-     */
-    _renderItem(item)
-    {
-        item = item || false;
-        if (!$.isPlainObject(item))  return false;
-        if ([typeof(item.id), typeof(item.value), typeof(item.title)].includes('undfined'))  return false;
 
-        let $item = $('<li class="pf-dropdown-item" data-item_id="' + item.id + '">{inner}</li>'),
-            $inner = null;
-        if ($.isFunction(this.settings.rendering.item)) {
-            $inner = this.settings.rendering.item(item, this.settings);
-        }
-        if ($inner === null || typeof $inner !== 'object' || typeof($inner[0]) !== 'undefined') {
-            $inner = $('<span class="default-item-template">' + item.title + '</span>');
-        }
-        $item.html($inner);
-        // callbacks: this.settings.onOverItem, this.settings.onLeaveItem, this.settings.onSelectItem
-        $item.hover(
-            (event) => {
-                if ($.isFunction(this.settings.onOverItem)) {
-                    let $item = $(event.target),
-                        data = this._getItemById($item.data('item_id'));
-                    this.settings.onOverItem($item, data);
-                }
-            },
-            (event) => {
-                if ($.isFunction(this.settings.onLeaveItem)) {
-                    let $item = $(event.target),
-                        data = this._getItemById($item.data('item_id'));
-                    this.settings.onLeaveItem($item, data);
-                }
-            }
-        );
-        $item.on('click', (event) => {
-            let data = this._getItemById($(event.target).data('item_id'));
-            this._onSelectItem($(event.target), data);
-            if ($.isFunction(this.settings.onSelectItem)) {
-                this.settings.onSelectItem(data);
-            }
-        });
-        return $item;
-    }
-
-
-    /**
-     * @param {Object} group Group data
-     * @param {string|Object} itemsHtml
-     * @param {Object} options Plugin settings
-     * @private
-     */
-    _renderGroup(group, itemsHtml, options)
-    {
-        let $groupTemplate = $('<li class="pf-dropdown-group" data-group_id="' + group.id + '">' +
-            '<span class="pf-group-item">' + group.label + '</span>' +
-            '<ul class="pf-dropdown-group-items">{items}</ul>' +
-        '</li>');
-
-        this._renderItem();
-    }
 
 
     _implementOriginalStyles()
@@ -200,97 +147,179 @@ class pfDropdown {
     }
 
 
-    /**
-     * @private
-     */
-    _renderContainer()
+    _renderWidget()
     {
-        this.setDefaultStyles();
-        this.$original.css('display', 'none');
-        this.$container = $('<div>').addClass(this.settings.containerClass).append(
-            $('<div class="pf-input-frame">\n' +
-                '<ul class="pf-decorated" style="display:none"><li></li></ul>\n' +
-                '<input type="text" class="pf-input" value=""/>\n' +
-                '<a href="#" class="pf-arrow"><i></i></a>\n' +
-                '</div>\n' +
-                '<div class="pf-dropdown-frame"><ul class="pf-dropdown-list"></ul></div>')
-        );
-        if (this.settings.useOriginalStyles) {
-            // clone general styles from original <select>
-            this._implementOriginalStyles();
+        this._renderContainer();
+        if (this.groups.length > 0) {
+            // if there are groups
+            let $groups = [];
+            for (let group of this.groups) {
+                let $items = [];
+                for (let item of this.items) {
+                    if (item.group == group.id) {
+                        let $item = this._renderItem(item);
+                        if ($item instanceof $) {
+                            $items.push($item);
+                        }
+                    }
+                }
+                let $group = this._renderGroup(group, $items);
+                if ($group instanceof $) {
+                    $groups.push($group);
+                }
+                this.$container.find('.pf-dropdown-list').html($groups);
+            }
+        } else {
+            // if there are no groups
+            if (this.items.length > 0) {
+                let $items = [];
+                for (let item of this.items) {
+                    let $item = this._renderItem(item);
+                    if ($item instanceof $) {
+                        $items.push($item);
+                    }
+                }
+                this.$container.find('.pf-dropdown-list').html($items);
+            }
         }
-        if (!this.settings.autocomplete) {
-            this.$container.find('.pf-input').prop('readonly', true);
+        // set current item
+        let item = this._getSelectedItem();
+        if (item !== null) {
+            let $item = this._renderItem(item);
+            if ($item !== false) {
+                this._onSelectItem($item, item, false);
+            }
         }
-        if (this.settings.displaySelectionAs === 'html') {
-            this.$container.find('.pf-decorated').css('display', '');
-        }
-        this.$container.find('.pf-input').css('background-color', 'transparent');
-        this.$container.find('.pf-dropdown-frame').css('display', 'none');
-        this.$container.insertBefore(this.$original);
-        this.$container.append(this.$original);
         // bind events
         this.$container.find('.pf-input-frame').on('click', (event) => {
             event.preventDefault();
             this._toggleDropdown();
             return false;
         });
-        $('body').on('click pf-dropdown-click', () => {
+        if (this.settings.autocomplete) {
+            // proxy some events to original <select>
+            this.$container.find('.pf-input').on('keypress keyup keydown', (event) => this.$original.trigger(event));
+        }
+        $('body').on('click', () => {
+            console.log('body click');
+            this.$container.find('.pf-dropdown-frame').css('display', 'none');
+        });
+        $('body').on('pf-dropdown-click', () => {
+            console.log('event: pf-dropdown-click');
             this.$container.find('.pf-dropdown-frame').css('display', 'none');
         });
     }
 
 
-    _renderWidget()
+    /**
+     * @private
+     */
+    _renderContainer()
     {
-        this._renderContainer();
-
-        console.log('point 1');
-
-        if (this.groups.length > 0) {
-
-            console.log('point 2', this.groups);
-
-        } else {
-
-            console.log('point 3');
-
-            if (this.items.length > 0) {
-
-                console.log('point 4');
-
-                let $items = [];
-                for (let item of this.items) {
-                    let $item = this._renderItem(item);
-                    if ($item !== false && typeof($item) === 'object' && typeof($item[0]) !== 'undefined') {
-                        $items.push($item);
-                    }
-                }
-
-                console.log('point 5', $items);
-
-                this.$container.find('.pf-dropdown-list').html($items);
-            }
-        }
-        return true;
+        this.$original.css('display', 'none');
+        this.$container = $('<div>').addClass(this.settings.containerClass).append($(
+            `<div class="pf-input-frame">
+                <ul class="pf-decorated" style="display:none"><li></li></ul>
+                <input type="text" class="pf-input" value="" style="background-color: transparent"/>
+                <a href="#" class="pf-arrow"><i></i></a>
+            </div>
+            <div class="pf-dropdown-frame" style="display:none">
+                <ul class="pf-dropdown-list"></ul>
+            </div>`
+        ));
+        // clone general styles from original <select>
+        if (this.settings.useOriginalStyles === true)  this._implementOriginalStyles();
+        // if no autocomplete, then disable the input
+        if (!this.settings.autocomplete === true)  this.$container.find('.pf-input').prop('readonly', true);
+        // selected item view type
+        if (this.settings.displaySelectionAs === 'html')  this.$container.find('.pf-decorated').css('display', '');
+        this.$container.insertBefore(this.$original);
+        this.$container.append(this.$original);
     }
 
 
-    // TODO
-    reloadOriginalItems()
+    /**
+     * @param {Object<jQueryElement>} $defaultTemplate
+     * @param {Object} item Item {title: title, value: value, data: {}}
+     * @param {Object} options Plugin settings
+     * @private
+     * @return {Object<jQueryElement>}
+     */
+    _renderItem(item)
     {
-        let items = this._loadOriginalOptions();
+        item = item || false;
+        if (!$.isPlainObject(item))  return false;
+        if ([typeof(item.id), typeof(item.value), typeof(item.title)].includes('undfined'))  return false;
 
-        if (items.length > 0) {
-
-        } else {
-
+        let $item = $('<li class="pf-dropdown-item" data-item_value="">{inner}</li>'),
+            $inner = null;
+        $item.attr('data-item_value', item.value);
+        if ($.isFunction(this.settings.rendering.item)) {
+            $inner = this.settings.rendering.item(item, this.settings);
         }
+        if (!($inner instanceof $)) {
+            $inner = $('<span class="default-item-template"></span>');
+            $inner.html(item.title);
+        }
+        $item.html($inner);
+        // callbacks: this.settings.onOverItem, this.settings.onLeaveItem, this.settings.onSelectItem
+        $item.hover(
+            (event) => {
+                if ($.isFunction(this.settings.onOverItem)) {
+                    let $item = $(event.target),
+                        data = this._getItemByValue($item.data('item_value'));
+                    this.settings.onOverItem($item, data);
+                }
+            },
+            (event) => {
+                if ($.isFunction(this.settings.onLeaveItem)) {
+                    let $item = $(event.target),
+                        data = this._getItemByValue($item.data('item_value'));
+                    this.settings.onLeaveItem($item, data);
+                }
+            }
+        );
+        $item.on('click', (event) => {
+            // todo delete console
+            console.log('click item', event.target, data);
+            let data = this._getItemByValue($(event.target).data('item_value'));
+            this._onSelectItem($(event.target), data);
+            if ($.isFunction(this.settings.onSelectItem)) {
+                this.settings.onSelectItem(data);
+            }
+        });
+        return $item;
+    }
+
+
+    /**
+     * @param {Object} group Group data
+     * @param {Array<Object>} $items
+     * @private
+     */
+    _renderGroup(group, $items)
+    {
+        let $group = null;
+        if ($.isFunction(this.settings.rendering.item)) {
+            $group = this.settings.rendering.group(group, $items, this.settings);
+        }
+        if (!($group instanceof $)) {
+            $group = $(
+                `<li class="pf-dropdown-group" data-group_id="${group.id}">
+                        <span class="pf-group-item">${group.label}</span>
+                    <ul class="pf-dropdown-group-items"></ul>
+                </li>`
+            );
+            $group.find('.pf-dropdown-group-items').html($items);
+        }
+        return $group;
     }
 
 
     _toggleDropdown()
     {
+        // todo delete console
+        console.log('_toggleDropdown');
         $('body').trigger('pf-dropdown-click');
         let $dropdown = this.$container.find('.pf-dropdown-frame');
         if ($dropdown.css('display') !== 'none') {
@@ -303,9 +332,9 @@ class pfDropdown {
     }
 
 
-    _onSelectItem($item, data)
+    _onSelectItem($item, data, close = true)
     {
-        this._toggleDropdown();
+        close && this._toggleDropdown();
         let $input = this.$container.find('.pf-input'),
             $frame = this.$container.find('.pf-decorated li');
         if (this.settings.displaySelectionAs === 'html') {
@@ -348,17 +377,6 @@ class pfDropdown {
 
         console.log("set: " + value);
 
-    }
-
-    // helpers
-    setDefaultStyles()
-    {
-        if (this.settings.insertDefaultStyles) {
-            if ($('#pf-default-styles').length > 0)  return;
-
-            // TODO reqire default styles
-
-        }
     }
 
 }

@@ -12,21 +12,29 @@
 
         <select id="select-1">
             <option>---</option>
-            <option value="123" data-json='{"json":"object"}'>Option 1</option>
-            <option value="4" data-json='{"json":"object"}'>Option 2</option>
-            <option value="5" data-json='{"json":"object"}'>Option 3</option>
-            <option value="6" data-json='{"json":"object"}'>Option 4</option>
-            <option value="7" data-json='{"json":"object"}'>Option 5</option>
+            <option value="1" data-set='{"icon":"icon1.png"}'>Option 1</option>
+            <option value="2" data-set='{"icon":"icon2.png"}'>Option 2</option>
+            <option value="3" data-set='{"icon":"icon3.png"}'>Option 3</option>
+            <option value="4" data-set='{"icon":"icon4.png"}'>Option 4</option>
+            <option value="5" data-set='{"icon":"icon5.png"}'>Option 5</option>
+            <option value="6" data-set='{"icon":"icon6.png"}'>Option 6</option>
+            <option value="7" data-set='{"icon":"icon7.png"}'>Option 7</option>
         </select>
         <br><!-- yes, I use <br>. Any problem? Haha. -->
         <br>
         <select id="select-2">
-            <option value="1">Option 1</option>
-            <option value="2">Option 2</option>
-            <option value="3">Option 3</option>
+            <optgroup label="group 1">
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+            </optgroup>
+            <optgroup label="group 2">
+                <option value="3">Option 3</option>
+                <option value="4">Option 4</option>
+                <option value="5">Option 5</option>
+            </optgroup>
         </select>
         <br>
-        <br>
+        <br><br><br><br><br>
         <h3>Default Template Demo (not css, html only)</h3>
         <div class="pf-dropdown">
             <select style="display:none"><option value="1">1</option><option value="2">2</option></select>
@@ -39,17 +47,17 @@
             </div>
             <div class="pf-dropdown-frame">
                 <ul class="pf-dropdown-list">
-                    <li class="pf-dropdown-item" data-item_id="1">
+                    <li class="pf-dropdown-item" data-item_value="1">
                         <span class="default-item-template">
                             pum purum
                         </span>
                     </li>
-                    <li class="pf-dropdown-item" data-item_id="2">
+                    <li class="pf-dropdown-item" data-item_value="2">
                         <span class="default-item-template">
                             pam param
                         </span>
                     </li>
-                    <li class="pf-dropdown-item" data-item_id="3">
+                    <li class="pf-dropdown-item" data-item_value="3">
                         <span class="default-item-template">
                             pim pirim
                         </span>
@@ -72,17 +80,17 @@
                     <li class="pf-dropdown-group">
                         <span class="pf-group-item">group title</span>
                         <ul class="pf-dropdown-group-items">
-                            <li class="pf-dropdown-item" data-item_id="1">
+                            <li class="pf-dropdown-item" data-item_value="1">
                                 <span class="default-item-template">
                                     pum purum
                                 </span>
                             </li>
-                            <li class="pf-dropdown-item" data-item_id="2">
+                            <li class="pf-dropdown-item" data-item_value="2">
                                 <span class="default-item-template">
                                     pam param
                                 </span>
                             </li>
-                            <li class="pf-dropdown-item" data-item_id="3">
+                            <li class="pf-dropdown-item" data-item_value="3">
                                 <span class="default-item-template">
                                     pim pirim
                                 </span>
