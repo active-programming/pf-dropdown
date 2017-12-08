@@ -7,19 +7,23 @@ import 'jquery';
 export default class {
 
     constructor() {
-
+        // define your properties if needed
+        // this.aPropery = 'a value';
+        // this.bPropery = 'b value';
     }
+
+    // Events methods
 
     onRendered($original, $container) {
 
     }
 
-    renderItem(item, settings) {
-        //return $('<tags>');
+    onClose($original, $container) {
+
     }
 
-    renderGroup(group, $items, settings) {
-        //return $('<tags>');
+    onOpen($original, $container) {
+
     }
 
     onOverItem($item, item) {
@@ -30,26 +34,47 @@ export default class {
 
     }
 
+    onInputKeyEvent(event, $input) {
+
+    }
+
     onSelectItem(item) {
 
     }
 
-    beforeAddItem(item) {
-        return true;
+    onBeforeAddItem(item) {
+        // return item or false;
     }
 
     onAddItem($item, item) {
 
     }
 
-    beforeDeleteItem($item, item) {
-        return true;
+    onBeforeDeleteItem($item, item) {
+        // return true or false;
     }
 
     onDeleteItem(item) {
 
     }
 
+    // Processors methods
+
+    renderItem(item, settings) {
+        // return $('<tags>');
+    }
+
+    renderGroup(group, $items, settings) {
+        // return $('<tags>');
+    }
+
+    ajaxDataBuilder(url, currentData, $original, $container) {
+        // return {url: {string}, data: {Object}};
+    }
+
+    ajaxResponseFilter(json) {
+        // process response and return json;
+    }
 }
 
 

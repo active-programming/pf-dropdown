@@ -19,30 +19,38 @@ class pfDropdown {
             minLength: 2, // minimal term size
             //closeOnSelect: true, // next release, setting of tags
             ajax: {
+                loadOnInit: false,
                 url: '',
                 type: 'get',
                 dataType: 'json',
-                data: this._getTerm,
-                onLoad: (items) => {
-                    return items;
-                }
+                valueKey: 'value',
+                titleKey: 'title',
+                dataKey: 'dataset'
+                // ajaxDataBuilder in callbacks
+                // ajaxResponseFilter in callbacks
             },
-            // plugins extensions
             plugins: [
-                // TODO plugin as object with callbacks methods (ex. PluginClass.onRendered, PluginClass.onAddItem, ...)
                 // new PluginClass()
             ],
-            // callbacks
-            onRendered: null, // ($original, $container) => { },
-            renderItem: null, // (item, settings) => { return $('<tags>'); },
-            renderGroup: null, // (group, $items, settings) => { return $('<tags>'); },
-            onOverItem: null, // ($item, item) => { },
-            onLeaveItem: null, // ($item, item) => { },
-            onSelectItem: null, // (item) => { },
-            beforeAddItem: null, // (item) => { return true; },
-            onAddItem: null, // ($item, item) => { },
-            beforeDeleteItem: null, //($item, item) => { return true; },
-            onDeleteItem: null // (item) => { },
+            callbacks: {
+                //events
+                onRendered: null, // ($original, $container) => { },
+                onClose: null, // ($original, $container) => { },
+                onOpen: null, // ($original, $container) => { },
+                onOverItem: null, // ($item, item) => { },
+                onLeaveItem: null, // ($item, item) => { },
+                onSelectItem: null, // (item) => { },
+                onBeforeAddItem: null, // (item) => { return item or false; },
+                onAddItem: null, // ($item, item) => { },
+                onBeforeDeleteItem: null, //($item, item) => { return true of false; },
+                onDeleteItem: null, // (item) => { },
+                onInputKeyEvent: null, // (event, $input) => { }
+                // processors
+                renderItem: null, // (item, settings) => { return $('<tags>'); },
+                renderGroup: null, // (group, $items, settings) => { return $('<tags>'); },
+                ajaxDataBuilder: null, // (url, currentData, $original, $container) => { return {url: {string}, currentData: {Object}}; },
+                ajaxResponseFilter: null //(json) => { process response and return json; },
+            }
         }, options);
 
         // load current options of original selector
@@ -50,7 +58,7 @@ class pfDropdown {
         // render widget
         this._renderWidget(this.items, this.groups);
         // trigger event
-        if ($.isFunction(this.settings.onRendered)) this.settings.onRendered(this.$original, this.$container);
+        this._triggerMyEvent('onRendered', this.$original, this.$container);
     }
 
 
@@ -67,7 +75,6 @@ class pfDropdown {
                     group: groupId,
                     value: value,
                     title: $o.text() ? $o.text() : '',
-                    selected: (currentValue == value) ? true : false,
                     data: dataset ? dataset : {}
                 });
             });
@@ -86,16 +93,18 @@ class pfDropdown {
 
     _getSelectedItem()
     {
-        // todo multiple?
-        if (this.items.length > 0) {
-            for (let item of this.items) {
-                if (item.selected)  return item;
-            }
-        }
-        return null;
+        // todo what about multiple?
+        let currentValue = this.$original.find('option:selected').attr('value');
+        return this._getItemByValue(currentValue);
     }
 
 
+    /**
+     * Returns all Items data by its value
+     * @param {string} value
+     * @return {null|Object}
+     * @private
+     */
     _getItemByValue(value)
     {
         if (this.items.length > 0) {
@@ -105,16 +114,6 @@ class pfDropdown {
         }
         return null;
     }
-
-
-    _getTerm()
-    {
-
-
-    }
-
-
-
 
 
     _implementOriginalStyles()
@@ -176,7 +175,7 @@ class pfDropdown {
         let item = this._getSelectedItem();
         if (item !== null) {
             let $item = this._renderItem(item);
-            if ($item !== false)  this._onSelectItem($item, item, false);
+            if ($item !== false)  this._selectItem($item, item);
         }
         // bind events
         this.$container.find('.pf-input-frame').on('click', (event) => {
@@ -186,13 +185,14 @@ class pfDropdown {
         });
         if (this.settings.autocomplete) {
             // proxy some events to original <select>
-            this.$container.find('.pf-input').on('keypress keyup keydown', (event) => this.$original.trigger(event));
+            this.$container.find('.pf-input').on('keypress keyup keydown', (event) => {
+                this.$original.trigger(event);
+                this._triggerMyEvent('onInputKeyEvent', event, $(event.currentTarget));
+            });
         }
-        $('body').on('click', () => {
+        $('body').on('click pf-dropdown-click', () => {
             this.$container.find('.pf-dropdown-frame').css('display', 'none');
-        });
-        $('body').on('pf-dropdown-click', () => {
-            this.$container.find('.pf-dropdown-frame').css('display', 'none');
+            this._triggerMyEvent('onClose', this.$original, this.$container);
         });
     }
 
@@ -274,26 +274,21 @@ class pfDropdown {
         // callbacks: this.settings.onOverItem, this.settings.onLeaveItem, this.settings.onSelectItem
         $item.hover(
             (event) => {
-                if ($.isFunction(this.settings.onOverItem)) {
-                    let $item = $(event.currentTarget),
-                        data = this._getItemByValue($item.data('item_value'));
-                    this.settings.onOverItem($item, data);
-                }
+                let $item = $(event.currentTarget),
+                    data = this._getItemByValue($item.data('item_value'));
+                this._triggerMyEvent('onOverItem', $item, data);
             },
             (event) => {
-                if ($.isFunction(this.settings.onLeaveItem)) {
-                    let $item = $(event.currentTarget),
-                        data = this._getItemByValue($item.data('item_value'));
-                    this.settings.onLeaveItem($item, data);
-                }
+                let $item = $(event.currentTarget),
+                    data = this._getItemByValue($item.data('item_value'));
+                this._triggerMyEvent('onLeaveItem', $item, data);
             }
         );
         $item.on('click', (event) => {
-            let data = this._getItemByValue($(event.currentTarget).data('item_value'));
-            this._onSelectItem($(event.currentTarget), data);
-            if ($.isFunction(this.settings.onSelectItem)) {
-                this.settings.onSelectItem(data);
-            }
+            let item = this._getItemByValue($(event.currentTarget).data('item_value'));
+            this._selectItem($(event.currentTarget), item);
+            this._triggerMyEvent('onSelectItem', item);
+            this._toggleDropdown(); // todo for multiple we don't need to close it
         });
         return $item;
     }
@@ -331,17 +326,18 @@ class pfDropdown {
         let $dropdown = this.$container.find('.pf-dropdown-frame');
         if ($dropdown.css('display') !== 'none') {
             $dropdown.css('display', 'none');
+            this._triggerMyEvent('onClose', this.$original, this.$container);
         } else {
             if (this.$container.find('.pf-dropdown-item').length > 0) {
                 $dropdown.css('display', '');
+                this._triggerMyEvent('onOpen', this.$original, this.$container);
             }
         }
     }
 
 
-    _onSelectItem($item, data, close = true)
+    _selectItem($item, data)
     {
-        close && this._toggleDropdown();
         let $input = this.$container.find('.pf-input'),
             $frame = this.$container.find('.pf-decorated li');
         if (this.settings.displaySelectionAs === 'html') {
@@ -352,13 +348,35 @@ class pfDropdown {
             $input.val(data.title); // TODO error
             $frame.html('');
         }
-
-        // TODO изменить текущее значение в оригинальном select и вызвать событие change
-
+        // update original <select>
+        this.$original.val(data.value).trigger('change');
     }
 
 
-    onLoadItems(items)
+    /**
+     * This method runs events only, it doesn't return any results
+     * @param {string} eventName
+     * @param {Array} data Mixed arguments
+     * @private
+     */
+    _triggerMyEvent(eventName, ...data)
+    {
+        // check callbacks from widget settings
+        if ($.isFunction(this.settings.callbacks[eventName])) {
+            this.settings.callbacks[eventName].apply(this, data);
+        }
+        // check plugins
+        if (this.settings.plugins.length > 0) {
+            for (plugin of this.settings.plugins) {
+                if (typeof plugin === 'object' && $.isFunction(plugin[eventName])) {
+                    plugin[eventName].apply(this, data);
+                }
+            }
+        }
+    }
+
+
+    _loadItemsFromResponse(json)
     {
 
         return items;
@@ -366,13 +384,14 @@ class pfDropdown {
 
 
 
+    // Public methods
+
     /**
      * @return {Object} {value: "123", title: "Numbers", data: {Object} }
      */
     getValue()
     {
-
-
+        return this._getSelectedItem();
     }
 
 
@@ -381,9 +400,14 @@ class pfDropdown {
      */
     setValue(value)
     {
-
-        console.log("set: " + value);
-
+        let item = this._getItemByValue(value);
+        if (item !== null) {
+            let $item = this._renderItem(item);
+            if ($item instanceof $) {
+                this._selectItem($item, item);
+                this._triggerMyEvent('onSelectItem', item);
+            }
+        }
     }
 
 }

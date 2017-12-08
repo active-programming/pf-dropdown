@@ -1,0 +1,6 @@
+[
+  {"title": "Krasnoyarsk", "value": 24, "dataset": {"metro": "on development"}},
+  {"title": "Novosibirsk", "value": 54, "dataset": {"metro": "exist"}},
+  {"title": "Omsk", "value": 55, "dataset": {"metro": "all complicated"}},
+  {"title": "Samara", "value": 163, "dataset": {"metro": "exist"}}
+]

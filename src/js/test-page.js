@@ -21,6 +21,13 @@ $(function($) {
         onSelectItem: function (data) {
             //console.log('selected', data);
         },
+        ajax: {
+            loadOnInit: true,
+            url: './select-3.json',
+            valueKey: 'value',
+            titleKey: 'title',
+            dataKey: 'dataset'
+        },
         plugins: [
             new PluginExample()
         ]
