@@ -52,9 +52,20 @@ class pfDropdown {
                 ajaxResponseFilter: null //(json) => { process response and return json; },
             }
         }, options);
+        let itemsLodingPromise = new $.Deferred();
+        // load items
+        if ($.trim(this.settings.ajax.url) === '') {
+            // load current options of original selector
+            this._loadOriginalOptions();
+            itemsLodingPromise.resolve();
+        } else {
+            if (this.settings.ajax.loadOnInit === true) {
 
-        // load current options of original selector
-        this._loadOriginalOptions();
+            } else {
+
+            }
+        }
+
         // render widget
         this._renderWidget(this.items, this.groups);
         // trigger event
@@ -95,6 +106,7 @@ class pfDropdown {
     {
         // todo what about multiple?
         let currentValue = this.$original.find('option:selected').attr('value');
+        currentValue = currentValue || '';
         return this._getItemByValue(currentValue);
     }
 
@@ -116,34 +128,35 @@ class pfDropdown {
     }
 
 
-    _implementOriginalStyles()
+    _implementOriginalStyles($original, $container)
     {
         const needed = ['background', 'backgroundColor', 'border', 'position', 'top', 'left', 'right', 'bottom', 'color',
             'cursor', 'font', 'height', 'lineHeight', 'margin', 'maxHeight', 'maxWidth', 'outline', /* 'padding', */
             'width', 'wordSpacing', 'wordWrap', 'zoom'];
-        let originalStyles = typeof(document.defaultView) !== 'undefined' ? document.defaultView.getComputedStyle(this.$original[0], null) : {};
+        let originalStyles = typeof(document.defaultView) !== 'undefined' ? document.defaultView.getComputedStyle($original[0], null) : {};
         for (let key in originalStyles) {
             if (needed.includes(key)) {
                 let value = originalStyles[key];
                 if (['height', 'width'].includes(key) && value === 'auto') {
-                    value = this.$original.css(key);
+                    value = $original.css(key);
                 }
                 if (key === 'position' && value === 'static')  value = 'relative';
                 if (key === 'border') {
                     if (value !== 'none') {
-                        this.$container.find('.pf-input-frame').css(key, value)
+                        $container.find('.pf-input-frame').css(key, value)
                             .css('box-sizing', 'border-box');
-                        this.$container.find('.pf-dropdown-frame').css(key, value)
+                        $container.find('.pf-dropdown-frame').css(key, value)
                             .css('border-top', 'none').css('box-sizing', 'border-box');
                     }
                 } else {
-                    this.$container.css(key, value);
+                    $container.css(key, value);
                     if (['width', 'height'].includes(key)) {
-                        this.$container.find('.pf-input-frame').css(key, value);
+                        $container.find('.pf-input-frame').css(key, value);
                     }
                 }
             }
         }
+        return $container;
     }
 
 
@@ -155,16 +168,14 @@ class pfDropdown {
     _renderWidget(items, groups)
     {
         let $listItems;
-        this._renderContainer();
+        this.$container = this._renderContainer(this.$original, this.settings);
         if (groups.length > 0) {
             // if there are groups
             $listItems = $([]);
             for (let group of groups) {
                 let $items = this._renderItems(items, group.id),
                     $group = this._renderGroup(group, $items);
-                if ($group instanceof $) {
-                    $listItems = $listItems.add($group);
-                }
+                if ($group instanceof $)  $listItems = $listItems.add($group);
             }
         } else {
             // if there are no groups
@@ -191,8 +202,10 @@ class pfDropdown {
             });
         }
         $('body').on('click pf-dropdown-click', () => {
-            this.$container.find('.pf-dropdown-frame').css('display', 'none');
-            this._triggerMyEvent('onClose', this.$original, this.$container);
+            if (this.$container.find('.pf-dropdown-frame').css('display') !== 'none') {
+                this.$container.find('.pf-dropdown-frame').css('display', 'none');
+                this._triggerMyEvent('onClose', this.$original, this.$container);
+            }
         });
     }
 
@@ -200,10 +213,10 @@ class pfDropdown {
     /**
      * @private
      */
-    _renderContainer()
+    _renderContainer($original, settings)
     {
-        this.$original.css('display', 'none');
-        this.$container = $('<div>').addClass(this.settings.containerClass).append($(
+        $original.css('display', 'none');
+        let $container = $('<div>').addClass(settings.containerClass).append($(
             `<div class="pf-input-frame">
                 <ul class="pf-decorated" style="display:none"><li></li></ul>
                 <input type="text" class="pf-input" value="" style="background-color: transparent"/>
@@ -214,13 +227,16 @@ class pfDropdown {
             </div>`
         ));
         // clone general styles from original <select>
-        if (this.settings.useOriginalStyles === true)  this._implementOriginalStyles();
+        if (settings.useOriginalStyles === true) {
+            $container = this._implementOriginalStyles($original, $container);
+        }
         // if no autocomplete, then disable the input
-        if (!this.settings.autocomplete === true)  this.$container.find('.pf-input').prop('readonly', true);
+        if (!settings.autocomplete === true)  $container.find('.pf-input').prop('readonly', true);
         // selected item view type
-        if (this.settings.displaySelectionAs === 'html')  this.$container.find('.pf-decorated').css('display', '');
-        this.$container.insertBefore(this.$original);
-        this.$container.append(this.$original);
+        if (settings.displaySelectionAs === 'html')  $container.find('.pf-decorated').css('display', '');
+        $container.insertBefore(this.$original);
+        $container.append(this.$original);
+        return $container;
     }
 
 

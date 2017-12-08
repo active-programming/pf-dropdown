@@ -62,7 +62,9 @@ $pf-height: 22px;
     border: 1px solid gray;
     border-top: none;
     width: 100%;
-    overflow: hidden;
+    max-height: 120px;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     .pf-dropdown-list {
       list-style: none;

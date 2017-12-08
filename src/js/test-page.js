@@ -9,23 +9,25 @@ $(function($) {
         containerClass: 'pf-dropdown',
         useOriginalStyles: true,
         autocomplete: true,
-        onRendered: function ($original, $container) {
-            console.log('RENDERED!', $original[0]);
-        },
-        onClose: function ($original, $container) {
-            console.log('onClose', $original[0]);
-        },
-        onOpen: function ($original, $container) {
-            console.log('onOpen', $original[0]);
-        },
-        onOverItem: function ($item, data) {
-            console.log('over', $item, data);
-        },
-        onLeaveItem: function ($item, data) {
-            console.log('leave', $item, data);
-        },
-        onSelectItem: function (data) {
-            console.log('selected', data);
+        callbacks: {
+            onRendered: function ($original, $container) {
+                //console.log('RENDERED!', $container[0], $original[0]);
+            },
+            onClose: function ($original, $container) {
+                //console.log('onClose', $container[0], $original[0]);
+            },
+            onOpen: function ($original, $container) {
+                //console.log('onOpen', $container[0], $original[0]);
+            },
+            onOverItem: function ($item, data) {
+                //console.log('over', $item, data);
+            },
+            onLeaveItem: function ($item, data) {
+                //console.log('leave', $item, data);
+            },
+            onSelectItem: function (data) {
+                //console.log('selected', data);
+            },
         },
         ajax: {
             loadOnInit: true,
