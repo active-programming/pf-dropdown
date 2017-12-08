@@ -367,7 +367,7 @@ class pfDropdown {
         }
         // check plugins
         if (this.settings.plugins.length > 0) {
-            for (plugin of this.settings.plugins) {
+            for (let plugin of this.settings.plugins) {
                 if (typeof plugin === 'object' && $.isFunction(plugin[eventName])) {
                     plugin[eventName].apply(this, data);
                 }
