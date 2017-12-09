@@ -21,9 +21,11 @@ $(function($) {
             },
             onOverItem: function ($item, data) {
                 //console.log('over', $item, data);
+                $item.css('background-color', 'magenta');
             },
             onLeaveItem: function ($item, data) {
                 //console.log('leave', $item, data);
+                $item.css('background-color', '');
             },
             onSelectItem: function (data) {
                 //console.log('selected', data);
