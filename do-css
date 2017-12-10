@@ -1,2 +1,0 @@
-#!/bin/bash
-sass --watch demo:demo --style compressed

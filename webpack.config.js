@@ -6,12 +6,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = function(env) {
     let mode = env && env.mode ? env.mode : 'plugin';
-
     if (mode === 'testpage') {
         return {
             context: __dirname,
             entry: [
-                './src/js/test-page.js'
+                './demo/test-page.es7.js',
+                './demo/test-page.scss'
             ],
             output: {
                 filename: './demo/test-page.js'
@@ -20,10 +20,21 @@ module.exports = function(env) {
                 loaders: [
                     {
                         test: /\.(js|jsx)$/,
-                        loader: "babel-loader",
+                        loader: 'babel-loader',
                         query: {
-                            presets: ["env"]
+                            plugins: ['transform-class-properties'],
+                            presets: ['env']
                         }
+                    },
+                    {
+                        test: /\.css$/,
+                        loader: ExtractTextPlugin.extract({
+                            use: 'css-loader?importLoaders=1',
+                        }),
+                    },
+                    {
+                        test: /\.(sass|scss)$/,
+                        use: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
                     }
                 ]
             },
@@ -32,7 +43,10 @@ module.exports = function(env) {
                     $: 'jquery',
                     jQuery: 'jquery'
                 }),
-                new webpack.optimize.UglifyJsPlugin()
+                new ExtractTextPlugin({
+                    filename: './demo/test-page.css',
+                    allChunks: true
+                }),
             ]
         };
     }
@@ -52,9 +66,10 @@ module.exports = function(env) {
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
-                    loader: "babel-loader",
+                    loader: 'babel-loader',
                     query: {
-                        presets: ["env"]
+                        plugins: ['transform-class-properties'],
+                        presets: ['env']
                     }
                 },
                 {
@@ -75,7 +90,7 @@ module.exports = function(env) {
             new ExtractTextPlugin({
                 filename: './css/default.css',
                 allChunks: true
-            }),
+            })
         ]
     };
 
