@@ -7,6 +7,9 @@ html {
     html body h1 {
       font-size: 20px;
       font-family: monospace; }
+    html body h2 {
+      font-size: 14px;
+      font-family: monospace; }
 
 /* original select styles */
 #select-1 {
@@ -17,3 +20,16 @@ html {
   height: 26px;
   width: 300px;
   background-color: #fff; }
+
+#select-3 {
+  border: 1px solid #ff6868;
+  font-size: 13px;
+  color: #ff9000;
+  font-family: monospace;
+  line-height: 20px;
+  height: 26px;
+  width: 200px;
+  background-color: #fff; }
+
+.margin-10-0 {
+  margin: 10px 0; }

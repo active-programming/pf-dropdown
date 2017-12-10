@@ -116,12 +116,6 @@ class pfDropdown {
 
     _loadRemoteItems()
     {
-        // this.settings.ajax.dataKey
-        // this.settings.ajax.dataType
-        // this.settings.ajax.titleKey
-        // ajaxDataBuilder in callbacks
-        // ajaxResponseFilter in callbacks
-
         let ajaxParam = this.settings.ajax,
             data = {};
         if (this.settings.autocomplete === true) {
@@ -133,21 +127,57 @@ class pfDropdown {
         if (this.$ajax !== null && this.$ajax.readyState !== 4) {
             this.$ajax.abort();
         }
-        data =
+        data = this._executeCallback('ajaxDataBuilder', data, this.$original, this.$container, this.settings);
         this.$ajax = $.ajax({
             url: ajaxParam.url,
             type: ajaxParam.type,
             dataType: 'json',
             data: data
         }).done((json) => {
+            let data = this._executeCallback('ajaxResponseFilter', json, this.settings);
+            if (!Array.isArray(data) && !$.isPlainObject(data)) {
+                data = json;
+            }
+            this._loadItemsFromResponse(data);
+        });
+    }
 
-            // todo events
 
-        })
+    /**
+     * @param json
+     * @return {*[]}
+     * @private
+     */
+    _loadItemsFromResponse(data)
+    {
+        let items = [],
+            groups = [];
+        if (Array.isArray(data)) {
+            // items only
 
 
+        } else if ($.isPlainObject(data)) {
+            // items with groups
 
 
+        }
+
+        let groupId = this.groups.length + 1;
+        this.groups.push({id: groupId, label: $(g).attr('label')});
+
+        this.items.push({
+            group: groupId,
+            value: value,
+            title: $o.text() ? $o.text() : '',
+            data: dataset ? dataset : {}
+        });
+
+        // todo events
+
+        // this.settings.ajax.dataKey
+        // this.settings.ajax.dataType
+        // this.settings.ajax.titleKey
+        return [items, groups];
     }
 
 
@@ -202,6 +232,9 @@ class pfDropdown {
                     if (['width', 'height'].includes(key)) {
                         $container.find('.pf-input-frame').css(key, value);
                     }
+                    if (key === 'color') {
+                        $container.find('.pf-input').css(key, value);
+                    }
                 }
             }
         }
@@ -244,6 +277,11 @@ class pfDropdown {
             event.preventDefault();
             this._toggleDropdown();
             return false;
+        });
+        this.$original.on('change', (event, byWho) => {
+            byWho = byWho || '';
+            if (byWho === 'by-widget-changed') return false;
+            this.setValue($(event.currentTarget).val());
         });
         if (this.settings.autocomplete) {
             // proxy some events to original <select>
@@ -396,7 +434,7 @@ class pfDropdown {
             $frame.html('');
         }
         // update original <select>
-        this.$original.val(data.value).trigger('change');
+        this.$original.val(data.value).trigger('change', ['by-widget-changed']);
     }
 
 
@@ -409,29 +447,29 @@ class pfDropdown {
      */
     _executeCallback(cbName, ...args)
     {
+        let isEvent = (cbName.substring(0, 2) === 'on') ? true : false;
         // check callbacks from widget settings
         if ($.isFunction(this.settings.callbacks[cbName])) {
-            args[0] = this.settings.callbacks[cbName].apply(this, args);
+            if (isEvent) {
+                this.settings.callbacks[cbName].apply(this, args);
+            } else {
+                args[0] = this.settings.callbacks[cbName].apply(this, args);
+            }
         }
         // check plugins
         if (this.settings.plugins.length > 0) {
             for (let plugin of this.settings.plugins) {
                 if (typeof plugin === 'object' && $.isFunction(plugin[cbName])) {
-                    args[0] = plugin[cbName].apply(this, args);
+                    if (isEvent) {
+                        plugin[cbName].apply(plugin, args);
+                    } else {
+                        args[0] = plugin[cbName].apply(plugin, args);
+                    }
                 }
             }
         }
         return args[0];
     }
-
-
-    // TODO delete?
-    _loadItemsFromResponse(json)
-    {
-
-        return items;
-    }
-
 
 
     // Public methods

@@ -11,7 +11,7 @@
     <h1>PF Dropdown</h1>
 
     <form>
-
+        <h2>Dropdown without groups, callbacks and small plugin</h2>
         <select id="select-1">
             <option>---</option>
             <option value="1" data-set='{"icon":"icon1.png"}'>Option 1</option>
@@ -24,6 +24,7 @@
         </select>
         <br>
         <br>
+        <h2>Dropdown with groups but without plugin</h2>
         <select id="select-2">
             <optgroup label="group 1">
                 <option value="1" data-set='{"description":"The option 1 is the option with number 1"}'>Option 1</option>
@@ -35,8 +36,16 @@
                 <option value="5" data-set='{"description":"The option 5 is the option with number 5"}'>Option 5</option>
             </optgroup>
         </select>
+        <br>
+        <br>
+        <h2>Dropdown with remote source and plugin</h2>
+        <div class="margin-10-0">Selected value: <span id="select-3-value"></span></div>
+        <select id="select-3">
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+        </select>
 
-        </form>
+    </form>
 
 </body>
 </html>

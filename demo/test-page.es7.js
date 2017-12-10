@@ -1,68 +1,89 @@
 import 'jquery';
 import './../src/js/pf-dropdown';
-import PluginExample from './plugin-example';
+import PluginSelect1 from './plugin-select-1';
+import PluginSelect3 from './plugin-select-3';
 require('!style-loader!css-loader!./../distr/css/default.css');
 
 $(function($) {
 
-    $('#select-1').pfDropdown({
+    let $select1 = $('#select-1');
+    $select1.pfDropdown({
         containerClass: 'pf-dropdown',
         useOriginalStyles: true,
-        //autocomplete: true,
         callbacks: {
             onRendered: function ($original, $container) {
-                //console.log('RENDERED!', $container[0], $original[0]);
-            },
-            onClose: function ($original, $container) {
-                //console.log('onClose', $container[0], $original[0]);
-            },
-            onOpen: function ($original, $container) {
-                //console.log('onOpen', $container[0], $original[0]);
+                console.log('#select-1 RENDERED!' /*, $container[0], $original[0]*/);
             },
             onOverItem: function ($item, data) {
-                //console.log('over', $item, data);
                 $item.css('background-color', 'magenta');
             },
             onLeaveItem: function ($item, data) {
-                //console.log('leave', $item, data);
                 $item.css('background-color', '');
             },
-            onSelectItem: function (data) {
-                //console.log('selected', data);
+            onSelectItem: function(item) {
+                console.log('select-1: item selected:', item);
             }
         },
-        ajax: {
-            loadOnInit: true,
-            url: './select-3.json',
-            valueKey: 'value',
-            titleKey: 'title',
-            dataKey: 'dataset'
-        },
         plugins: [
-            new PluginExample()
+            new PluginSelect1()
         ]
-    }).on('keypress keyup keydown', function(event) {
-        //console.log('select-1', event);
     });
+    // set value by plugin
+    $select1.pfDropdown('setValue', '2');
+    console.log('pfDropdown.setValue()',  $select1.pfDropdown('getValue'));
+    // set value directly
+    $select1.val('3').trigger('change'); // yes, you need to call 'change' event.
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
+
 
     $('#select-2').pfDropdown({
         containerClass: 'pf-dropdown',
         useOriginalStyles: false,
         displaySelectionAs: 'html',
         callbacks: {
-            renderGroup: function($group, group, $items, $original, $container, settings)
-            {
-                console.log('callback: renderGroup');
-                $group.addClass('my-callback');
+            renderGroup: function($group, group, $items, $original, $container, settings) {
+                $group.addClass('rendergroup-callback').find('.pf-group-item').html('&gt; ' + group.label);
                 return $group;
             }
+        }
+    });
+
+
+    $('#select-3').pfDropdown({
+        useOriginalStyles: true,
+        ajax: {
+            url: './select-3.json',
+            loadOnInit: true,
+            valueKey: 'value',
+            titleKey: 'title',
+            dataKey: 'dataset'
         },
         plugins: [
-            new PluginExample()
+            new PluginSelect3()
         ]
     });
 
-    // call some method
-    //$('#select-1').pfDropdown('setValue', 'value');
+
+    // todo autocomplete
+    // $('#select-4').pfDropdown({
+    //     containerClass: 'pf-dropdown',
+    //     useOriginalStyles: true,
+    //     callbacks: {
+    //         onRendered: function ($original, $container) {
+    //             console.log('RENDERED!', $container[0], $original[0]);
+    //         },
+    //         onOverItem: function ($item, data) {
+    //             $item.css('background-color', 'magenta');
+    //         },
+    //         onLeaveItem: function ($item, data) {
+    //             $item.css('background-color', '');
+    //         }
+    //     },
+    //     plugins: [
+    //         new PluginSelect1()
+    //     ]
+    // }).on('keypress keyup keydown', function(event) {
+    //     console.log('select-1: key event', event);
+    // });
 
 });

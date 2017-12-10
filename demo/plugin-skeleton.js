@@ -1,9 +1,9 @@
-/**
- * TODO Plugin example
- */
 'use strict';
 import 'jquery';
 
+/**
+ * Plugin skeleton
+ */
 export default class {
 
     // define your properties here if you have "transform-class-properties" bable plugin or in constructor
@@ -83,22 +83,23 @@ export default class {
 
     renderGroup($group, group, $items, $original, $container, settings)
     {
-        $group.addClass('my-class-name');
-        $group.find('.pf-group-item').html('&#9679; ' + group.label);
-        return $group;
+        // $group.addClass('my-class-name');
+        // $group.find('.pf-group-item').html('&#9679; ' + group.label);
+        // return $group;
     }
 
     ajaxDataBuilder(currentData, $original, $container, settings)
     {
-        let myData = $.extend(currentData, {myParam: 'my value'});
-        return myData;
+        //let myData = $.extend(currentData, {myParam: 'my value'});
+        //return myData;
     }
 
     ajaxResponseFilter(json, settings)
     {
+        // @see select-3.json and select-4.json for example of response
         // let response = [];
-        // for (item of json)  response.push({title: item.header, value: item.id, dataset: {hey: 'you!'}});
-        // return json;
+        // for (let item of json)  response.push({title: item.header, value: item.id, dataset: {hey: 'you!'}});
+        // return response;
     }
 }
 

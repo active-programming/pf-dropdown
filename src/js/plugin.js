@@ -14,42 +14,38 @@ import $ from 'jquery';
  *         // ...
  *     }
  * }
- *
- * MyPlugin.DEFAULTS = {};
- *
- * plugin('myPlugin', MyPlugin');
- *
- * Note: I don't remember where I found this function...
  */
 export default function plugin(pluginName, className, shortHand = false) {
-    let dataName = `__${pluginName}`;
-    let old = $.fn[pluginName];
+    let dataName = `__${pluginName}`,
+        originalPlugin = $.fn[pluginName];
 
     $.fn[pluginName] = function (option, param) {
         param = param || null;
-        return this.each(function () {
-            let $this = $(this);
-            let data = $this.data(dataName);
-            let options = $.extend({}, className.DEFAULTS, $this.data(), typeof option === 'object' && option);
-
+        let methodResult = null,
+            methodCalled = false;
+        this.each(function () {
+            let $this = $(this),
+                data = $this.data(dataName),
+                options = $.extend({}, className.DEFAULTS, $this.data(), typeof option === 'object' && option);
             if (!data) {
                 $this.data(dataName, (data = new className(this, options)));
             }
-
             // calls a method
             if (typeof option === 'string') {
                 if ($.isFunction(data[option])) {
-                    data[option](param);
+                    methodResult = data[option](param);
+                    methodCalled = true;
                 } else {
                     console.log(pluginName + " has no method or option like '" + option + "'");
                 }
             }
         });
+        return methodCalled ? methodResult : this;
     };
 
     if (shortHand) {
         $[pluginName] = (options) => $({})[pluginName](options);
     }
 
-    $.fn[pluginName].noConflict = () => $.fn[pluginName] = old;
+    $.fn[pluginName].noConflict = () => $.fn[pluginName] = originalPlugin;
 }

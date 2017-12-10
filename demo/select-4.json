@@ -1,0 +1,18 @@
+{
+  "Group A": [
+    {"title": "Option 1", "value": "1", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 2", "value": "2", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 3", "value": "3", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 4", "value": "4", "dataset": {"param":"value", "param2":"value2"}}
+  ],
+  "Group B": [
+    {"title": "Option 5", "value": "5", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 6", "value": "6", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 7", "value": "7", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 8", "value": "8", "dataset": {"param":"value", "param2":"value2"}}
+  ],
+  "Group C": [
+    {"title": "Option 9", "value": "9", "dataset": {"param":"value", "param2":"value2"}},
+    {"title": "Option 10", "value": "10", "dataset": {"param":"value", "param2":"value2"}}
+  ]
+}

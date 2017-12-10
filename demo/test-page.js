@@ -9482,7 +9482,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);
-module.exports = __webpack_require__(12);
+module.exports = __webpack_require__(13);
 
 
 /***/ }),
@@ -9496,53 +9496,46 @@ __webpack_require__(0);
 
 __webpack_require__(4);
 
-var _pluginExample = __webpack_require__(6);
+var _pluginSelect = __webpack_require__(6);
 
-var _pluginExample2 = _interopRequireDefault(_pluginExample);
+var _pluginSelect2 = _interopRequireDefault(_pluginSelect);
+
+var _pluginSelect3 = __webpack_require__(7);
+
+var _pluginSelect4 = _interopRequireDefault(_pluginSelect3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(7);
+__webpack_require__(8);
 
 $(function ($) {
 
-    $('#select-1').pfDropdown({
+    var $select1 = $('#select-1');
+    $select1.pfDropdown({
         containerClass: 'pf-dropdown',
         useOriginalStyles: true,
-        //autocomplete: true,
         callbacks: {
             onRendered: function onRendered($original, $container) {
-                //console.log('RENDERED!', $container[0], $original[0]);
-            },
-            onClose: function onClose($original, $container) {
-                //console.log('onClose', $container[0], $original[0]);
-            },
-            onOpen: function onOpen($original, $container) {
-                //console.log('onOpen', $container[0], $original[0]);
+                console.log('#select-1 RENDERED!' /*, $container[0], $original[0]*/);
             },
             onOverItem: function onOverItem($item, data) {
-                //console.log('over', $item, data);
                 $item.css('background-color', 'magenta');
             },
             onLeaveItem: function onLeaveItem($item, data) {
-                //console.log('leave', $item, data);
                 $item.css('background-color', '');
             },
-            onSelectItem: function onSelectItem(data) {
-                //console.log('selected', data);
+            onSelectItem: function onSelectItem(item) {
+                console.log('select-1: item selected:', item);
             }
         },
-        ajax: {
-            loadOnInit: true,
-            url: './select-3.json',
-            valueKey: 'value',
-            titleKey: 'title',
-            dataKey: 'dataset'
-        },
-        plugins: [new _pluginExample2.default()]
-    }).on('keypress keyup keydown', function (event) {
-        //console.log('select-1', event);
+        plugins: [new _pluginSelect2.default()]
     });
+    // set value by plugin
+    $select1.pfDropdown('setValue', '2');
+    console.log('pfDropdown.setValue()', $select1.pfDropdown('getValue'));
+    // set value directly
+    $select1.val('3').trigger('change'); // yes, you need to call 'change' event.
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
 
     $('#select-2').pfDropdown({
         containerClass: 'pf-dropdown',
@@ -9550,16 +9543,45 @@ $(function ($) {
         displaySelectionAs: 'html',
         callbacks: {
             renderGroup: function renderGroup($group, group, $items, $original, $container, settings) {
-                console.log('callback: renderGroup');
-                $group.addClass('my-callback');
+                $group.addClass('rendergroup-callback').find('.pf-group-item').html('&gt; ' + group.label);
                 return $group;
             }
-        },
-        plugins: [new _pluginExample2.default()]
+        }
     });
 
-    // call some method
-    //$('#select-1').pfDropdown('setValue', 'value');
+    $('#select-3').pfDropdown({
+        useOriginalStyles: true,
+        ajax: {
+            url: './select-3.json',
+            loadOnInit: true,
+            valueKey: 'value',
+            titleKey: 'title',
+            dataKey: 'dataset'
+        },
+        plugins: [new _pluginSelect4.default()]
+    });
+
+    // todo autocomplete
+    // $('#select-4').pfDropdown({
+    //     containerClass: 'pf-dropdown',
+    //     useOriginalStyles: true,
+    //     callbacks: {
+    //         onRendered: function ($original, $container) {
+    //             console.log('RENDERED!', $container[0], $original[0]);
+    //         },
+    //         onOverItem: function ($item, data) {
+    //             $item.css('background-color', 'magenta');
+    //         },
+    //         onLeaveItem: function ($item, data) {
+    //             $item.css('background-color', '');
+    //         }
+    //     },
+    //     plugins: [
+    //         new PluginSelect1()
+    //     ]
+    // }).on('keypress keyup keydown', function(event) {
+    //     console.log('select-1: key event', event);
+    // });
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -9718,11 +9740,7 @@ var pfDropdown = function () {
     }, {
         key: '_loadRemoteItems',
         value: function _loadRemoteItems() {
-            // this.settings.ajax.dataKey
-            // this.settings.ajax.dataType
-            // this.settings.ajax.titleKey
-            // ajaxDataBuilder in callbacks
-            // ajaxResponseFilter in callbacks
+            var _this2 = this;
 
             var ajaxParam = this.settings.ajax,
                 data = {};
@@ -9735,14 +9753,22 @@ var pfDropdown = function () {
             if (this.$ajax !== null && this.$ajax.readyState !== 4) {
                 this.$ajax.abort();
             }
-            data = this.$ajax = _jquery2.default.ajax({
+            data = this._executeCallback('ajaxDataBuilder', data, this.$original, this.$container, this.settings);
+            this.$ajax = _jquery2.default.ajax({
                 url: ajaxParam.url,
                 type: ajaxParam.type,
                 dataType: 'json',
                 data: data
             }).done(function (json) {
+                json = _this2._executeCallback('ajaxResponseFilter', json, _this2.settings);
+
+                console.log(json);
 
                 // todo events
+
+                // this.settings.ajax.dataKey
+                // this.settings.ajax.dataType
+                // this.settings.ajax.titleKey
 
             });
         }
@@ -9816,6 +9842,9 @@ var pfDropdown = function () {
                         if (['width', 'height'].includes(key)) {
                             $container.find('.pf-input-frame').css(key, value);
                         }
+                        if (key === 'color') {
+                            $container.find('.pf-input').css(key, value);
+                        }
                     }
                 }
             }
@@ -9832,7 +9861,7 @@ var pfDropdown = function () {
     }, {
         key: '_renderWidget',
         value: function _renderWidget(items, groups) {
-            var _this2 = this;
+            var _this3 = this;
 
             var $listItems = void 0;
             this.$container = this._renderContainer(this.$original, this.settings);
@@ -9880,20 +9909,25 @@ var pfDropdown = function () {
             // bind events
             this.$container.find('.pf-input-frame').on('click', function (event) {
                 event.preventDefault();
-                _this2._toggleDropdown();
+                _this3._toggleDropdown();
                 return false;
+            });
+            this.$original.on('change', function (event, byWho) {
+                byWho = byWho || '';
+                if (byWho === 'by-widget-changed') return false;
+                _this3.setValue((0, _jquery2.default)(event.currentTarget).val());
             });
             if (this.settings.autocomplete) {
                 // proxy some events to original <select>
                 this.$input.on('keypress keyup keydown', function (event) {
-                    _this2.$original.trigger(event);
-                    _this2._executeCallback('onInputKeyEvent', event, (0, _jquery2.default)(event.currentTarget));
+                    _this3.$original.trigger(event);
+                    _this3._executeCallback('onInputKeyEvent', event, (0, _jquery2.default)(event.currentTarget));
                 });
             }
             (0, _jquery2.default)('body').on('click pf-dropdown-click', function (event) {
-                if (_this2.$container.find('.pf-dropdown-frame').css('display') !== 'none') {
-                    _this2.$container.find('.pf-dropdown-frame').css('display', 'none');
-                    _this2._executeCallback('onClose', _this2.$original, _this2.$container);
+                if (_this3.$container.find('.pf-dropdown-frame').css('display') !== 'none') {
+                    _this3.$container.find('.pf-dropdown-frame').css('display', 'none');
+                    _this3._executeCallback('onClose', _this3.$original, _this3.$container);
                 }
             });
             return this.$container;
@@ -9980,7 +10014,7 @@ var pfDropdown = function () {
     }, {
         key: '_renderItem',
         value: function _renderItem(item) {
-            var _this3 = this;
+            var _this4 = this;
 
             item = item || false;
             if (!_jquery2.default.isPlainObject(item)) return false;
@@ -9992,18 +10026,18 @@ var pfDropdown = function () {
             }
             $item.hover(function (event) {
                 var $item = (0, _jquery2.default)(event.currentTarget),
-                    data = _this3._getItemByValue($item.data('item_value'));
-                _this3._executeCallback('onOverItem', $item, data);
+                    data = _this4._getItemByValue($item.data('item_value'));
+                _this4._executeCallback('onOverItem', $item, data);
             }, function (event) {
                 var $item = (0, _jquery2.default)(event.currentTarget),
-                    data = _this3._getItemByValue($item.data('item_value'));
-                _this3._executeCallback('onLeaveItem', $item, data);
+                    data = _this4._getItemByValue($item.data('item_value'));
+                _this4._executeCallback('onLeaveItem', $item, data);
             });
             $item.on('click', function (event) {
-                var item = _this3._getItemByValue((0, _jquery2.default)(event.currentTarget).data('item_value'));
-                _this3._selectItem((0, _jquery2.default)(event.currentTarget), item);
-                _this3._executeCallback('onSelectItem', item);
-                _this3._toggleDropdown(); // todo for multiple we don't need to close it
+                var item = _this4._getItemByValue((0, _jquery2.default)(event.currentTarget).data('item_value'));
+                _this4._selectItem((0, _jquery2.default)(event.currentTarget), item);
+                _this4._executeCallback('onSelectItem', item);
+                _this4._toggleDropdown(); // todo for multiple we don't need to close it
             });
             return $item;
         }
@@ -10057,7 +10091,7 @@ var pfDropdown = function () {
                 $frame.html('');
             }
             // update original <select>
-            this.$original.val(data.value).trigger('change');
+            this.$original.val(data.value).trigger('change', ['by-widget-changed']);
         }
 
         /**
@@ -10071,13 +10105,19 @@ var pfDropdown = function () {
     }, {
         key: '_executeCallback',
         value: function _executeCallback(cbName) {
+            var isEvent = cbName.substring(0, 2) === 'on' ? true : false;
+            // check callbacks from widget settings
+
             for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                 args[_key - 1] = arguments[_key];
             }
 
-            // check callbacks from widget settings
             if (_jquery2.default.isFunction(this.settings.callbacks[cbName])) {
-                args[0] = this.settings.callbacks[cbName].apply(this, args);
+                if (isEvent) {
+                    this.settings.callbacks[cbName].apply(this, args);
+                } else {
+                    args[0] = this.settings.callbacks[cbName].apply(this, args);
+                }
             }
             // check plugins
             if (this.settings.plugins.length > 0) {
@@ -10090,7 +10130,11 @@ var pfDropdown = function () {
                         var _plugin = _step4.value;
 
                         if ((typeof _plugin === 'undefined' ? 'undefined' : _typeof(_plugin)) === 'object' && _jquery2.default.isFunction(_plugin[cbName])) {
-                            args[0] = _plugin[cbName].apply(this, args);
+                            if (isEvent) {
+                                _plugin[cbName].apply(_plugin, args);
+                            } else {
+                                args[0] = _plugin[cbName].apply(_plugin, args);
+                            }
                         }
                     }
                 } catch (err) {
@@ -10190,39 +10234,35 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *         // ...
  *     }
  * }
- *
- * MyPlugin.DEFAULTS = {};
- *
- * plugin('myPlugin', MyPlugin');
- *
- * Note: I don't remember where I found this function...
  */
 function plugin(pluginName, className) {
     var shortHand = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-    var dataName = '__' + pluginName;
-    var old = _jquery2.default.fn[pluginName];
+    var dataName = '__' + pluginName,
+        originalPlugin = _jquery2.default.fn[pluginName];
 
     _jquery2.default.fn[pluginName] = function (option, param) {
         param = param || null;
-        return this.each(function () {
-            var $this = (0, _jquery2.default)(this);
-            var data = $this.data(dataName);
-            var options = _jquery2.default.extend({}, className.DEFAULTS, $this.data(), (typeof option === 'undefined' ? 'undefined' : _typeof(option)) === 'object' && option);
-
+        var methodResult = null,
+            methodCalled = false;
+        this.each(function () {
+            var $this = (0, _jquery2.default)(this),
+                data = $this.data(dataName),
+                options = _jquery2.default.extend({}, className.DEFAULTS, $this.data(), (typeof option === 'undefined' ? 'undefined' : _typeof(option)) === 'object' && option);
             if (!data) {
                 $this.data(dataName, data = new className(this, options));
             }
-
             // calls a method
             if (typeof option === 'string') {
                 if (_jquery2.default.isFunction(data[option])) {
-                    data[option](param);
+                    methodResult = data[option](param);
+                    methodCalled = true;
                 } else {
                     console.log(pluginName + " has no method or option like '" + option + "'");
                 }
             }
         });
+        return methodCalled ? methodResult : this;
     };
 
     if (shortHand) {
@@ -10232,7 +10272,7 @@ function plugin(pluginName, className) {
     }
 
     _jquery2.default.fn[pluginName].noConflict = function () {
-        return _jquery2.default.fn[pluginName] = old;
+        return _jquery2.default.fn[pluginName] = originalPlugin;
     };
 }
 
@@ -10257,85 +10297,35 @@ __webpack_require__(0);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var _class = function () {
-
-    // define your properties here if you have "transform-class-properties" bable plugin or in constructor
-    //aPropery = 'a value';
-    //bPropery = 'b value';
-
     function _class() {
         _classCallCheck(this, _class);
     }
-    // this.aPropery = 'a value';
-    // this.bPropery = 'b value';
-
 
     // Events methods
 
     _createClass(_class, [{
-        key: 'onRendered',
-        value: function onRendered($original, $container) {}
-    }, {
-        key: 'onClose',
-        value: function onClose($original, $container) {}
-    }, {
-        key: 'onOpen',
-        value: function onOpen($original, $container) {}
-    }, {
         key: 'onOverItem',
-        value: function onOverItem($item, item) {}
+        value: function onOverItem($item, item) {
+            $item.css('color', '#fff');
+        }
     }, {
         key: 'onLeaveItem',
-        value: function onLeaveItem($item, item) {}
-    }, {
-        key: 'onInputKeyEvent',
-        value: function onInputKeyEvent(event, $input) {}
+        value: function onLeaveItem($item, item) {
+            $item.css('color', '');
+        }
     }, {
         key: 'onSelectItem',
-        value: function onSelectItem(item) {}
-    }, {
-        key: 'onBeforeAddItem',
-        value: function onBeforeAddItem(item) {
-            // return item or false;
+        value: function onSelectItem(item) {
+            $('#select-1-value').html(item.title);
         }
-    }, {
-        key: 'onAddItem',
-        value: function onAddItem($item, item) {}
-    }, {
-        key: 'onBeforeDeleteItem',
-        value: function onBeforeDeleteItem($item, item) {
-            // return true or false;
-        }
-    }, {
-        key: 'onDeleteItem',
-        value: function onDeleteItem(item) {}
 
         // preProcessors methods
 
     }, {
         key: 'renderItem',
         value: function renderItem($item, item, $original, $container, settings) {
-            // $item.addClass('my-class-name');
-            // return $item;
-        }
-    }, {
-        key: 'renderGroup',
-        value: function renderGroup($group, group, $items, $original, $container, settings) {
-            $group.addClass('my-class-name');
-            $group.find('.pf-group-item').html('&#9679; ' + group.label);
-            return $group;
-        }
-    }, {
-        key: 'ajaxDataBuilder',
-        value: function ajaxDataBuilder(currentData, $original, $container, settings) {
-            var myData = $.extend(currentData, { myParam: 'my value' });
-            return myData;
-        }
-    }, {
-        key: 'ajaxResponseFilter',
-        value: function ajaxResponseFilter(json, settings) {
-            // let response = [];
-            // for (item of json)  response.push({title: item.header, value: item.id, dataset: {hey: 'you!'}});
-            // return json;
+            $item.addClass('my-class-name');
+            return $item;
         }
     }]);
 
@@ -10349,10 +10339,101 @@ exports.default = _class;
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/**
+ * TODO Plugin example
+ */
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+__webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _class = function () {
+    function _class() {
+        _classCallCheck(this, _class);
+
+        this.lastIndex = 0;
+        this.colors = ['red', 'blue', 'green', 'magenta', 'orange'];
+    }
+
+    // Events methods
+
+    _createClass(_class, [{
+        key: 'onSelectItem',
+        value: function onSelectItem(item) {
+            $('#select-3-value').html(item.value + ', ' + item.title);
+        }
+
+        // preProcessors methods
+
+    }, {
+        key: 'renderItem',
+        value: function renderItem($item, item, $original, $container, settings) {
+            $item.css('color', this.colors[this.lastIndex]);
+            this.lastIndex++;
+            if (this.colors.length === this.lastIndex) {
+                this.lastIndex = 0;
+            }
+            return $item;
+        }
+    }, {
+        key: 'ajaxDataBuilder',
+        value: function ajaxDataBuilder(currentData, $original, $container, settings) {
+            return $.extend(currentData, { myParam: 'my value' });
+        }
+    }, {
+        key: 'ajaxResponseFilter',
+        value: function ajaxResponseFilter(json, settings) {
+            var response = [];
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = json[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var item = _step.value;
+                    response.push({ title: item.header, value: item.id, dataset: item.dataset });
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            return response;
+        }
+    }]);
+
+    return _class;
+}();
+
+exports.default = _class;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(8);
+var content = __webpack_require__(9);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -10360,7 +10441,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(10)(content, options);
+var update = __webpack_require__(11)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -10377,10 +10458,10 @@ if(false) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(9)(undefined);
+exports = module.exports = __webpack_require__(10)(undefined);
 // imports
 
 
@@ -10391,7 +10472,7 @@ exports.push([module.i, "/**\n * PF Dropdown\n * @url https://github.com/active-
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10473,7 +10554,7 @@ function toComment(sourceMap) {
 }
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -10529,7 +10610,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(11);
+var	fixUrls = __webpack_require__(12);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -10845,7 +10926,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10940,7 +11021,7 @@ module.exports = function (css) {
 };
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
