@@ -69,19 +69,25 @@ $(function($) {
         autocomplete: true,
         useOriginalStyles: false,
         ajax: {
-            url: 'http://localhost:9101/get-items'
+            url: 'http://localhost:3210/get-items'
         },
         callbacks: {
             ajaxDataBuilder(currentData, $original, $container, settings) {
-
-                console.log(currentData);
-
-                //let myData = $.extend(currentData, {myParam: 'my value'});
-                //return myData;
+                return $.extend(currentData, {myParam: 'my value'});
+            },
+            ajaxResponseFilter(json, settings)
+            {
+                let response = [];
+                for (let item of json)  response.push({
+                    title: item.country_name,
+                    value: item.country_code,
+                    dataset: item.data
+                });
+                return response;
             }
         }
     }).on('keypress keyup keydown', function(event) {
-        console.log('select-1: key event', event);
+        //console.log('select-1: key event', event);
     });
 
 });

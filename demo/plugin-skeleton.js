@@ -90,8 +90,7 @@ export default class {
 
     ajaxDataBuilder(currentData, $original, $container, settings)
     {
-        //let myData = $.extend(currentData, {myParam: 'my value'});
-        //return myData;
+        //return $.extend(currentData, {myParam: 'my value'});
     }
 
     ajaxResponseFilter(json, settings)

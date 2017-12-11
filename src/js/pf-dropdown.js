@@ -72,7 +72,10 @@ class pfDropdown {
     {
         this.$original = $(element);
         // Default options
-        this.settings = $.extend(this.settings, options);
+        let settings = $.extend({}, this.settings, options);
+        settings.ajax = $.extend({}, this.settings.ajax, options.ajax);
+        settings.callbacks = $.extend({}, this.settings.callbacks, options.callbacks);
+        this.settings = settings;
         // load current options of original selector
         this._loadOriginalOptions();
         // render widget
@@ -120,9 +123,7 @@ class pfDropdown {
             data = {};
         if (this.settings.autocomplete === true) {
             // get term
-            let term = this.$input.val();
-            if (this.settings.minLength > term.length)  return false;
-            data['term'] = term;
+            data['term'] = this.$input.val();
         }
         if (this.$ajax !== null && this.$ajax.readyState !== 4) {
             this.$ajax.abort();
@@ -164,7 +165,6 @@ class pfDropdown {
                     console.warn('Wrong item type', item);
                 }
             };
-
         if (Array.isArray(data)) {
             // items only
             for (let item of data) {
@@ -196,6 +196,17 @@ class pfDropdown {
         // todo events
 
         return [this.items, this.groups]; // for testing only
+    }
+
+
+    _deleteAllItems()
+    {
+        this.items = [];
+        this.groups = [];
+        this.$original.html('');
+        if (this.$container.find('.pf-dropdown-item').length > 0) {
+            this.$container.find('.pf-dropdown-frame').css('display', '');
+        }
     }
 
 
@@ -304,6 +315,14 @@ class pfDropdown {
         // bind events
         this.$container.find('.pf-input-frame').on('click', (event) => {
             event.preventDefault();
+            if (this.settings.autocomplete === true) {
+                let term = this.$input.val();
+                if (term.length >= this.settings.minLength) {
+                    this._loadRemoteItems();
+                } else {
+                    this._deleteAllItems();
+                }
+            }
             this._toggleDropdown();
             return false;
         });
@@ -315,8 +334,16 @@ class pfDropdown {
         if (this.settings.autocomplete) {
             // proxy some events to original <select>
             this.$input.on('keypress keyup keydown', (event) => {
+                let term = $(event.currentTarget).val();
                 this.$original.trigger(event);
                 this._executeCallback('onInputKeyEvent', event, $(event.currentTarget));
+                if (event.type === 'keyup') {
+                    if (term.length >= this.settings.minLength) {
+                        this._loadRemoteItems();
+                    } else {
+                        this._deleteAllItems();
+                    }
+                }
             });
         }
         $('body').on('click pf-dropdown-click', (event) => {
@@ -352,10 +379,12 @@ class pfDropdown {
         }
         $container.find('.pf-dropdown-list').html($listItems);
         // set current item
-        let item = this._getSelectedItem();
-        if (item !== null) {
-            let $item = this._renderItem(item);
-            if ($item !== false)  this._selectItem($item, item);
+        if (this.settings.autocomplete !== true) {
+            let item = this._getSelectedItem();
+            if (item !== null) {
+                let $item = this._renderItem(item);
+                if ($item !== false) this._selectItem($item, item);
+            }
         }
     }
 

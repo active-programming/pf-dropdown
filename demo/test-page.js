@@ -9566,19 +9566,47 @@ $(function ($) {
         autocomplete: true,
         useOriginalStyles: false,
         ajax: {
-            url: 'http://localhost:9101/get-items'
+            url: 'http://localhost:3210/get-items'
         },
         callbacks: {
             ajaxDataBuilder: function ajaxDataBuilder(currentData, $original, $container, settings) {
+                return $.extend(currentData, { myParam: 'my value' });
+            },
+            ajaxResponseFilter: function ajaxResponseFilter(json, settings) {
+                var response = [];
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
 
-                console.log(currentData);
+                try {
+                    for (var _iterator = json[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var item = _step.value;
+                        response.push({
+                            title: item.country_name,
+                            value: item.country_code,
+                            dataset: item.data
+                        });
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
 
-                //let myData = $.extend(currentData, {myParam: 'my value'});
-                //return myData;
+                return response;
             }
         }
     }).on('keypress keyup keydown', function (event) {
-        console.log('select-1: key event', event);
+        //console.log('select-1: key event', event);
     });
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
@@ -9693,7 +9721,10 @@ var pfDropdown = function () {
 
         this.$original = (0, _jquery2.default)(element);
         // Default options
-        this.settings = _jquery2.default.extend(this.settings, options);
+        var settings = _jquery2.default.extend({}, this.settings, options);
+        settings.ajax = _jquery2.default.extend({}, this.settings.ajax, options.ajax);
+        settings.callbacks = _jquery2.default.extend({}, this.settings.callbacks, options.callbacks);
+        this.settings = settings;
         // load current options of original selector
         this._loadOriginalOptions();
         // render widget
@@ -9744,9 +9775,7 @@ var pfDropdown = function () {
                 data = {};
             if (this.settings.autocomplete === true) {
                 // get term
-                var term = this.$input.val();
-                if (this.settings.minLength > term.length) return false;
-                data['term'] = term;
+                data['term'] = this.$input.val();
             }
             if (this.$ajax !== null && this.$ajax.readyState !== 4) {
                 this.$ajax.abort();
@@ -9793,7 +9822,6 @@ var pfDropdown = function () {
                     console.warn('Wrong item type', item);
                 }
             };
-
             if (Array.isArray(data)) {
                 // items only
                 var _iteratorNormalCompletion = true;
@@ -9867,6 +9895,16 @@ var pfDropdown = function () {
             // todo events
 
             return [this.items, this.groups]; // for testing only
+        }
+    }, {
+        key: '_deleteAllItems',
+        value: function _deleteAllItems() {
+            this.items = [];
+            this.groups = [];
+            this.$original.html('');
+            if (this.$container.find('.pf-dropdown-item').length > 0) {
+                this.$container.find('.pf-dropdown-frame').css('display', '');
+            }
         }
     }, {
         key: '_getSelectedItem',
@@ -10063,6 +10101,14 @@ var pfDropdown = function () {
             // bind events
             this.$container.find('.pf-input-frame').on('click', function (event) {
                 event.preventDefault();
+                if (_this4.settings.autocomplete === true) {
+                    var term = _this4.$input.val();
+                    if (term.length >= _this4.settings.minLength) {
+                        _this4._loadRemoteItems();
+                    } else {
+                        _this4._deleteAllItems();
+                    }
+                }
                 _this4._toggleDropdown();
                 return false;
             });
@@ -10074,8 +10120,16 @@ var pfDropdown = function () {
             if (this.settings.autocomplete) {
                 // proxy some events to original <select>
                 this.$input.on('keypress keyup keydown', function (event) {
+                    var term = (0, _jquery2.default)(event.currentTarget).val();
                     _this4.$original.trigger(event);
                     _this4._executeCallback('onInputKeyEvent', event, (0, _jquery2.default)(event.currentTarget));
+                    if (event.type === 'keyup') {
+                        if (term.length >= _this4.settings.minLength) {
+                            _this4._loadRemoteItems();
+                        } else {
+                            _this4._deleteAllItems();
+                        }
+                    }
                 });
             }
             (0, _jquery2.default)('body').on('click pf-dropdown-click', function (event) {
@@ -10133,10 +10187,12 @@ var pfDropdown = function () {
             }
             $container.find('.pf-dropdown-list').html($listItems);
             // set current item
-            var item = this._getSelectedItem();
-            if (item !== null) {
-                var $item = this._renderItem(item);
-                if ($item !== false) this._selectItem($item, item);
+            if (this.settings.autocomplete !== true) {
+                var item = this._getSelectedItem();
+                if (item !== null) {
+                    var $item = this._renderItem(item);
+                    if ($item !== false) this._selectItem($item, item);
+                }
             }
         }
 
