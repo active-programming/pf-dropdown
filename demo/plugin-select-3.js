@@ -18,7 +18,15 @@ export default class {
 
     onSelectItem(item)
     {
-        $('#select-3-value').html(item.value + ', ' + item.title);
+        let string = item.value + ', ' + item.title;
+        if ($.isPlainObject(item.data)) {
+            string = string + '  [';
+            $.each(item.data, (key, value) => {
+                string = string + '  ' + key + ':"' + value + '"';
+            });
+            string = $.trim(string) + ']';
+        }
+        $('#select-3-value').html(string);
     }
 
     // preProcessors methods
@@ -40,6 +48,7 @@ export default class {
 
     ajaxResponseFilter(json, settings)
     {
+        // let's convert original response to needed structure
         let response = [];
         for (let item of json)  response.push({title: item.header, value: item.id, dataset: item.dataset});
         return response;

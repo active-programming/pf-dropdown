@@ -9680,10 +9680,10 @@ var pfDropdown = function () {
                 onOverItem: null, // ($item, item) => { },
                 onLeaveItem: null, // ($item, item) => { },
                 onSelectItem: null, // (item) => { },
-                onBeforeAddItem: null, // (item) => { return item or false; },
-                onAddItem: null, // ($item, item) => { },
-                onBeforeDeleteItem: null, //($item, item) => { return true of false; },
-                onDeleteItem: null, // (item) => { },
+                // onBeforeAddItem: null, // (item) => { return item or false; },
+                // onAddItem: null, // ($item, item) => { },
+                // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
+                // onDeleteItem: null, // (item) => { },
                 onInputKeyEvent: null, // (event, $input) => { }
                 // data preprocessors
                 renderItem: null, // ($item, item, $original, $container, settings) => { return $item; },
@@ -9760,17 +9760,109 @@ var pfDropdown = function () {
                 dataType: 'json',
                 data: data
             }).done(function (json) {
-                json = _this2._executeCallback('ajaxResponseFilter', json, _this2.settings);
-
-                console.log(json);
-
-                // todo events
-
-                // this.settings.ajax.dataKey
-                // this.settings.ajax.dataType
-                // this.settings.ajax.titleKey
-
+                var data = _this2._executeCallback('ajaxResponseFilter', json, _this2.settings);
+                if (!Array.isArray(data) && !_jquery2.default.isPlainObject(data)) {
+                    data = json;
+                }
+                _this2._loadItemsFromResponse(data);
             });
+        }
+
+        /**
+         * @param {Array|Object} data
+         * @return {Array}
+         * @private
+         */
+
+    }, {
+        key: '_loadItemsFromResponse',
+        value: function _loadItemsFromResponse(data) {
+            var _this3 = this;
+
+            this.items = [];
+            this.groups = [];
+            var keys = this.settings.ajax,
+                addItemFn = function addItemFn(item) {
+                var groupId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+                if (_jquery2.default.isPlainObject(item)) {
+                    if (item[keys.dataKey] && item[keys.valueKey] && item[keys.titleKey]) {
+                        _this3.items.push({ group: groupId, value: item[keys.valueKey], title: item[keys.titleKey], data: item[keys.dataKey] });
+                    } else {
+                        console.warn('Item doesn\'t contain needed keys: ' + keys.titleKey + ', ' + keys.valueKey + ', ' + keys.dataKey, item);
+                    }
+                } else {
+                    console.warn('Wrong item type', item);
+                }
+            };
+
+            if (Array.isArray(data)) {
+                // items only
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var item = _step.value;
+
+                        addItemFn(item);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            } else if (_jquery2.default.isPlainObject(data)) {
+                // items with groups
+                _jquery2.default.each(data, function (groupLabel, itemsList) {
+                    if (Array.isArray(itemsList)) {
+                        var groupId = _this3.groups.length + 1;
+                        _this3.groups.push({ id: groupId, label: groupLabel });
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
+
+                        try {
+                            for (var _iterator2 = itemsList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var _item = _step2.value;
+
+                                addItemFn(_item, groupId);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            // replace original options and rendering new items
+            this._replaceOriginalOptions(this.$original, this.items, this.groups);
+            // render new items list
+            this._renderList(this.$container, this.items, this.groups);
+
+            // todo events
+
+            return [this.items, this.groups]; // for testing only
         }
     }, {
         key: '_getSelectedItem',
@@ -9792,27 +9884,27 @@ var pfDropdown = function () {
         key: '_getItemByValue',
         value: function _getItemByValue(value) {
             if (this.items.length > 0) {
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                var _iteratorNormalCompletion3 = true;
+                var _didIteratorError3 = false;
+                var _iteratorError3 = undefined;
 
                 try {
-                    for (var _iterator = this.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var item = _step.value;
+                    for (var _iterator3 = this.items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                        var item = _step3.value;
 
                         if (item.value == value) return item;
                     }
                 } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
+                    _didIteratorError3 = true;
+                    _iteratorError3 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
+                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                            _iterator3.return();
                         }
                     } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
+                        if (_didIteratorError3) {
+                            throw _iteratorError3;
                         }
                     }
                 }
@@ -9852,8 +9944,106 @@ var pfDropdown = function () {
         }
 
         /**
-         * @param {Object} items
-         * @param {Object} groups
+         * @param {Object<jQuery>} $original <select>
+         * @param {Array} items
+         * @param {Array} groups
+         * @return {Object<jQuery>}
+         * @private
+         */
+
+    }, {
+        key: '_replaceOriginalOptions',
+        value: function _replaceOriginalOptions($original) {
+            var items = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+            var groups = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+            $original.html('');
+            if (items.length > 0) {
+                if (groups.length > 0) {
+                    // if there are groups
+                    var _iteratorNormalCompletion4 = true;
+                    var _didIteratorError4 = false;
+                    var _iteratorError4 = undefined;
+
+                    try {
+                        for (var _iterator4 = groups[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                            var group = _step4.value;
+
+                            var $optgroup = (0, _jquery2.default)('<optgroup></optgroup>').attr('label', group.label);
+                            var _iteratorNormalCompletion5 = true;
+                            var _didIteratorError5 = false;
+                            var _iteratorError5 = undefined;
+
+                            try {
+                                for (var _iterator5 = items[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                                    var item = _step5.value;
+
+                                    $optgroup.append((0, _jquery2.default)('<option></option>').attr('value', item.value).html(item.title));
+                                }
+                            } catch (err) {
+                                _didIteratorError5 = true;
+                                _iteratorError5 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                        _iterator5.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError5) {
+                                        throw _iteratorError5;
+                                    }
+                                }
+                            }
+
+                            $original.append($optgroup);
+                        }
+                    } catch (err) {
+                        _didIteratorError4 = true;
+                        _iteratorError4 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                _iterator4.return();
+                            }
+                        } finally {
+                            if (_didIteratorError4) {
+                                throw _iteratorError4;
+                            }
+                        }
+                    }
+                } else {
+                    // if there are no groups
+                    var _iteratorNormalCompletion6 = true;
+                    var _didIteratorError6 = false;
+                    var _iteratorError6 = undefined;
+
+                    try {
+                        for (var _iterator6 = items[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                            var _item2 = _step6.value;
+
+                            $original.append((0, _jquery2.default)('<option></option>').attr('value', _item2.value).html(_item2.title));
+                        }
+                    } catch (err) {
+                        _didIteratorError6 = true;
+                        _iteratorError6 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                _iterator6.return();
+                            }
+                        } finally {
+                            if (_didIteratorError6) {
+                                throw _iteratorError6;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * @param {Array} items
+         * @param {Array} groups
          * @return {Object<jQuery>}
          * @private
          */
@@ -9861,37 +10051,75 @@ var pfDropdown = function () {
     }, {
         key: '_renderWidget',
         value: function _renderWidget(items, groups) {
-            var _this3 = this;
+            var _this4 = this;
 
-            var $listItems = void 0;
             this.$container = this._renderContainer(this.$original, this.settings);
             this.$input = this.$container.find('.pf-input');
+            this._renderList(this.$container, items, groups);
+            // bind events
+            this.$container.find('.pf-input-frame').on('click', function (event) {
+                event.preventDefault();
+                _this4._toggleDropdown();
+                return false;
+            });
+            this.$original.on('change', function (event, byWho) {
+                byWho = byWho || '';
+                if (byWho === 'by-widget-changed') return false;
+                _this4.setValue((0, _jquery2.default)(event.currentTarget).val());
+            });
+            if (this.settings.autocomplete) {
+                // proxy some events to original <select>
+                this.$input.on('keypress keyup keydown', function (event) {
+                    _this4.$original.trigger(event);
+                    _this4._executeCallback('onInputKeyEvent', event, (0, _jquery2.default)(event.currentTarget));
+                });
+            }
+            (0, _jquery2.default)('body').on('click pf-dropdown-click', function (event) {
+                if (_this4.$container.find('.pf-dropdown-frame').css('display') !== 'none') {
+                    _this4.$container.find('.pf-dropdown-frame').css('display', 'none');
+                    _this4._executeCallback('onClose', _this4.$original, _this4.$container);
+                }
+            });
+            return this.$container;
+        }
+
+        /**
+         * @param {Object<jQuery>} $container
+         * @param {Array} items
+         * @param {Array} groups
+         * @private
+         */
+
+    }, {
+        key: '_renderList',
+        value: function _renderList($container, items, groups) {
+            var $listItems = void 0;
             if (groups.length > 0) {
                 // if there are groups
                 $listItems = (0, _jquery2.default)([]);
-                var _iteratorNormalCompletion2 = true;
-                var _didIteratorError2 = false;
-                var _iteratorError2 = undefined;
+                var _iteratorNormalCompletion7 = true;
+                var _didIteratorError7 = false;
+                var _iteratorError7 = undefined;
 
                 try {
-                    for (var _iterator2 = groups[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                        var group = _step2.value;
+                    for (var _iterator7 = groups[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                        var group = _step7.value;
 
                         var $items = this._renderItems(items, group.id),
                             $group = this._renderGroup(group, $items);
                         if ($group instanceof _jquery2.default) $listItems = $listItems.add($group);
                     }
                 } catch (err) {
-                    _didIteratorError2 = true;
-                    _iteratorError2 = err;
+                    _didIteratorError7 = true;
+                    _iteratorError7 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                            _iterator2.return();
+                        if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                            _iterator7.return();
                         }
                     } finally {
-                        if (_didIteratorError2) {
-                            throw _iteratorError2;
+                        if (_didIteratorError7) {
+                            throw _iteratorError7;
                         }
                     }
                 }
@@ -9899,38 +10127,16 @@ var pfDropdown = function () {
                 // if there are no groups
                 $listItems = this._renderItems(items);
             }
-            this.$container.find('.pf-dropdown-list').html($listItems);
+            $container.find('.pf-dropdown-list').html($listItems);
             // set current item
             var item = this._getSelectedItem();
+
+            console.log('SELECTED', item);
+
             if (item !== null) {
                 var $item = this._renderItem(item);
                 if ($item !== false) this._selectItem($item, item);
             }
-            // bind events
-            this.$container.find('.pf-input-frame').on('click', function (event) {
-                event.preventDefault();
-                _this3._toggleDropdown();
-                return false;
-            });
-            this.$original.on('change', function (event, byWho) {
-                byWho = byWho || '';
-                if (byWho === 'by-widget-changed') return false;
-                _this3.setValue((0, _jquery2.default)(event.currentTarget).val());
-            });
-            if (this.settings.autocomplete) {
-                // proxy some events to original <select>
-                this.$input.on('keypress keyup keydown', function (event) {
-                    _this3.$original.trigger(event);
-                    _this3._executeCallback('onInputKeyEvent', event, (0, _jquery2.default)(event.currentTarget));
-                });
-            }
-            (0, _jquery2.default)('body').on('click pf-dropdown-click', function (event) {
-                if (_this3.$container.find('.pf-dropdown-frame').css('display') !== 'none') {
-                    _this3.$container.find('.pf-dropdown-frame').css('display', 'none');
-                    _this3._executeCallback('onClose', _this3.$original, _this3.$container);
-                }
-            });
-            return this.$container;
         }
 
         /**
@@ -9956,6 +10162,7 @@ var pfDropdown = function () {
         }
 
         /**
+         * @param {array} items
          * @param {number} groupId
          * @returns {*}
          * @private
@@ -9968,13 +10175,13 @@ var pfDropdown = function () {
 
             if (items.length > 0) {
                 var $items = (0, _jquery2.default)([]);
-                var _iteratorNormalCompletion3 = true;
-                var _didIteratorError3 = false;
-                var _iteratorError3 = undefined;
+                var _iteratorNormalCompletion8 = true;
+                var _didIteratorError8 = false;
+                var _iteratorError8 = undefined;
 
                 try {
-                    for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                        var item = _step3.value;
+                    for (var _iterator8 = items[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                        var item = _step8.value;
 
                         if (groupId < 0 || groupId >= 0 && item.group == groupId) {
                             var $item = this._renderItem(item);
@@ -9984,16 +10191,16 @@ var pfDropdown = function () {
                         }
                     }
                 } catch (err) {
-                    _didIteratorError3 = true;
-                    _iteratorError3 = err;
+                    _didIteratorError8 = true;
+                    _iteratorError8 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                            _iterator3.return();
+                        if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                            _iterator8.return();
                         }
                     } finally {
-                        if (_didIteratorError3) {
-                            throw _iteratorError3;
+                        if (_didIteratorError8) {
+                            throw _iteratorError8;
                         }
                     }
                 }
@@ -10014,7 +10221,7 @@ var pfDropdown = function () {
     }, {
         key: '_renderItem',
         value: function _renderItem(item) {
-            var _this4 = this;
+            var _this5 = this;
 
             item = item || false;
             if (!_jquery2.default.isPlainObject(item)) return false;
@@ -10026,18 +10233,18 @@ var pfDropdown = function () {
             }
             $item.hover(function (event) {
                 var $item = (0, _jquery2.default)(event.currentTarget),
-                    data = _this4._getItemByValue($item.data('item_value'));
-                _this4._executeCallback('onOverItem', $item, data);
+                    data = _this5._getItemByValue($item.data('item_value'));
+                _this5._executeCallback('onOverItem', $item, data);
             }, function (event) {
                 var $item = (0, _jquery2.default)(event.currentTarget),
-                    data = _this4._getItemByValue($item.data('item_value'));
-                _this4._executeCallback('onLeaveItem', $item, data);
+                    data = _this5._getItemByValue($item.data('item_value'));
+                _this5._executeCallback('onLeaveItem', $item, data);
             });
             $item.on('click', function (event) {
-                var item = _this4._getItemByValue((0, _jquery2.default)(event.currentTarget).data('item_value'));
-                _this4._selectItem((0, _jquery2.default)(event.currentTarget), item);
-                _this4._executeCallback('onSelectItem', item);
-                _this4._toggleDropdown(); // todo for multiple we don't need to close it
+                var item = _this5._getItemByValue((0, _jquery2.default)(event.currentTarget).data('item_value'));
+                _this5._selectItem((0, _jquery2.default)(event.currentTarget), item);
+                _this5._executeCallback('onSelectItem', item);
+                _this5._toggleDropdown(); // todo for multiple we don't need to close it
             });
             return $item;
         }
@@ -10097,7 +10304,7 @@ var pfDropdown = function () {
         /**
          * Executes events  data/object preprocessors
          * @param {string} cbName Callback name
-         * @param {Array} args First element is data for preprocessor
+         * @param {*} args First element is data for preprocessor
          * @returns {*}
          * @private
          */
@@ -10121,13 +10328,13 @@ var pfDropdown = function () {
             }
             // check plugins
             if (this.settings.plugins.length > 0) {
-                var _iteratorNormalCompletion4 = true;
-                var _didIteratorError4 = false;
-                var _iteratorError4 = undefined;
+                var _iteratorNormalCompletion9 = true;
+                var _didIteratorError9 = false;
+                var _iteratorError9 = undefined;
 
                 try {
-                    for (var _iterator4 = this.settings.plugins[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                        var _plugin = _step4.value;
+                    for (var _iterator9 = this.settings.plugins[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                        var _plugin = _step9.value;
 
                         if ((typeof _plugin === 'undefined' ? 'undefined' : _typeof(_plugin)) === 'object' && _jquery2.default.isFunction(_plugin[cbName])) {
                             if (isEvent) {
@@ -10138,30 +10345,21 @@ var pfDropdown = function () {
                         }
                     }
                 } catch (err) {
-                    _didIteratorError4 = true;
-                    _iteratorError4 = err;
+                    _didIteratorError9 = true;
+                    _iteratorError9 = err;
                 } finally {
                     try {
-                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                            _iterator4.return();
+                        if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                            _iterator9.return();
                         }
                     } finally {
-                        if (_didIteratorError4) {
-                            throw _iteratorError4;
+                        if (_didIteratorError9) {
+                            throw _iteratorError9;
                         }
                     }
                 }
             }
             return args[0];
-        }
-
-        // TODO delete?
-
-    }, {
-        key: '_loadItemsFromResponse',
-        value: function _loadItemsFromResponse(json) {
-
-            return items;
         }
 
         // Public methods
@@ -10368,7 +10566,15 @@ var _class = function () {
     _createClass(_class, [{
         key: 'onSelectItem',
         value: function onSelectItem(item) {
-            $('#select-3-value').html(item.value + ', ' + item.title);
+            var string = item.value + ', ' + item.title;
+            if ($.isPlainObject(item.data)) {
+                string = string + '  [';
+                $.each(item.data, function (key, value) {
+                    string = string + '  ' + key + ':"' + value + '"';
+                });
+                string = $.trim(string) + ']';
+            }
+            $('#select-3-value').html(string);
         }
 
         // preProcessors methods
@@ -10391,6 +10597,7 @@ var _class = function () {
     }, {
         key: 'ajaxResponseFilter',
         value: function ajaxResponseFilter(json, settings) {
+            // let's convert original response to needed structure
             var response = [];
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;

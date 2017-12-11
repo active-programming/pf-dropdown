@@ -54,10 +54,10 @@ class pfDropdown {
             onOverItem: null, // ($item, item) => { },
             onLeaveItem: null, // ($item, item) => { },
             onSelectItem: null, // (item) => { },
-            onBeforeAddItem: null, // (item) => { return item or false; },
-            onAddItem: null, // ($item, item) => { },
-            onBeforeDeleteItem: null, //($item, item) => { return true of false; },
-            onDeleteItem: null, // (item) => { },
+            // onBeforeAddItem: null, // (item) => { return item or false; },
+            // onAddItem: null, // ($item, item) => { },
+            // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
+            // onDeleteItem: null, // (item) => { },
             onInputKeyEvent: null, // (event, $input) => { }
             // data preprocessors
             renderItem: null, // ($item, item, $original, $container, settings) => { return $item; },
@@ -144,40 +144,52 @@ class pfDropdown {
 
 
     /**
-     * @param json
-     * @return {*[]}
+     * @param {Array|Object} data
+     * @return {Array}
      * @private
      */
     _loadItemsFromResponse(data)
     {
-        let items = [],
-            groups = [];
+        this.items = [];
+        this.groups = [];
+        let keys = this.settings.ajax,
+            addItemFn = (item, groupId = '') => {
+                if ($.isPlainObject(item)) {
+                    if (item[keys.dataKey] && item[keys.valueKey] && item[keys.titleKey]) {
+                        this.items.push({group: groupId, value: item[keys.valueKey], title: item[keys.titleKey], data: item[keys.dataKey]});
+                    } else {
+                        console.warn('Item doesn\'t contain needed keys: ' + keys.titleKey + ', ' + keys.valueKey + ', ' + keys.dataKey, item);
+                    }
+                } else {
+                    console.warn('Wrong item type', item);
+                }
+            };
+
         if (Array.isArray(data)) {
             // items only
-
-
+            for (let item of data) {
+                addItemFn(item);
+            }
         } else if ($.isPlainObject(data)) {
             // items with groups
-
-
+            $.each(data, (groupLabel, itemsList) => {
+                if (Array.isArray(itemsList)) {
+                    let groupId = this.groups.length + 1;
+                    this.groups.push({id: groupId, label: groupLabel});
+                    for (let item of itemsList) {
+                        addItemFn(item, groupId);
+                    }
+                }
+            });
         }
-
-        let groupId = this.groups.length + 1;
-        this.groups.push({id: groupId, label: $(g).attr('label')});
-
-        this.items.push({
-            group: groupId,
-            value: value,
-            title: $o.text() ? $o.text() : '',
-            data: dataset ? dataset : {}
-        });
+        // replace original options and rendering new items
+        this._replaceOriginalOptions(this.$original, this.items, this.groups);
+        // render new items list
+        this._renderList(this.$container, this.items, this.groups);
 
         // todo events
 
-        // this.settings.ajax.dataKey
-        // this.settings.ajax.dataType
-        // this.settings.ajax.titleKey
-        return [items, groups];
+        return [this.items, this.groups]; // for testing only
     }
 
 
@@ -243,35 +255,46 @@ class pfDropdown {
 
 
     /**
-     * @param {Object} items
-     * @param {Object} groups
+     * @param {Object<jQuery>} $original <select>
+     * @param {Array} items
+     * @param {Array} groups
+     * @return {Object<jQuery>}
+     * @private
+     */
+    _replaceOriginalOptions($original, items = [], groups = [])
+    {
+        $original.html('');
+        if (items.length > 0) {
+            if (groups.length > 0) {
+                // if there are groups
+                for (let group of groups) {
+                    let $optgroup = $('<optgroup></optgroup>').attr('label', group.label);
+                    for (let item of items) {
+                        $optgroup.append( $('<option></option>').attr('value', item.value).html(item.title) );
+                    }
+                    $original.append($optgroup);
+                }
+            } else {
+                // if there are no groups
+                for (let item of items) {
+                    $original.append( $('<option></option>').attr('value', item.value).html(item.title) );
+                }
+            }
+        }
+    }
+
+
+    /**
+     * @param {Array} items
+     * @param {Array} groups
      * @return {Object<jQuery>}
      * @private
      */
     _renderWidget(items, groups)
     {
-        let $listItems;
         this.$container = this._renderContainer(this.$original, this.settings);
         this.$input = this.$container.find('.pf-input');
-        if (groups.length > 0) {
-            // if there are groups
-            $listItems = $([]);
-            for (let group of groups) {
-                let $items = this._renderItems(items, group.id),
-                    $group = this._renderGroup(group, $items);
-                if ($group instanceof $)  $listItems = $listItems.add($group);
-            }
-        } else {
-            // if there are no groups
-            $listItems = this._renderItems(items);
-        }
-        this.$container.find('.pf-dropdown-list').html($listItems);
-        // set current item
-        let item = this._getSelectedItem();
-        if (item !== null) {
-            let $item = this._renderItem(item);
-            if ($item !== false)  this._selectItem($item, item);
-        }
+        this._renderList(this.$container, items, groups);
         // bind events
         this.$container.find('.pf-input-frame').on('click', (event) => {
             event.preventDefault();
@@ -301,6 +324,40 @@ class pfDropdown {
 
 
     /**
+     * @param {Object<jQuery>} $container
+     * @param {Array} items
+     * @param {Array} groups
+     * @private
+     */
+    _renderList($container, items, groups)
+    {
+        let $listItems;
+        if (groups.length > 0) {
+            // if there are groups
+            $listItems = $([]);
+            for (let group of groups) {
+                let $items = this._renderItems(items, group.id),
+                    $group = this._renderGroup(group, $items);
+                if ($group instanceof $)  $listItems = $listItems.add($group);
+            }
+        } else {
+            // if there are no groups
+            $listItems = this._renderItems(items);
+        }
+        $container.find('.pf-dropdown-list').html($listItems);
+        // set current item
+        let item = this._getSelectedItem();
+
+        console.log('SELECTED', item);
+
+        if (item !== null) {
+            let $item = this._renderItem(item);
+            if ($item !== false)  this._selectItem($item, item);
+        }
+    }
+
+
+    /**
      * @private
      */
     _renderContainer($original, settings)
@@ -323,6 +380,7 @@ class pfDropdown {
 
 
     /**
+     * @param {array} items
      * @param {number} groupId
      * @returns {*}
      * @private
@@ -441,7 +499,7 @@ class pfDropdown {
     /**
      * Executes events  data/object preprocessors
      * @param {string} cbName Callback name
-     * @param {Array} args First element is data for preprocessor
+     * @param {*} args First element is data for preprocessor
      * @returns {*}
      * @private
      */
