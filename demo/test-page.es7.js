@@ -64,26 +64,24 @@ $(function($) {
     });
 
 
-    // todo autocomplete
-    // $('#select-4').pfDropdown({
-    //     containerClass: 'pf-dropdown',
-    //     useOriginalStyles: true,
-    //     callbacks: {
-    //         onRendered: function ($original, $container) {
-    //             console.log('RENDERED!', $container[0], $original[0]);
-    //         },
-    //         onOverItem: function ($item, data) {
-    //             $item.css('background-color', 'magenta');
-    //         },
-    //         onLeaveItem: function ($item, data) {
-    //             $item.css('background-color', '');
-    //         }
-    //     },
-    //     plugins: [
-    //         new PluginSelect1()
-    //     ]
-    // }).on('keypress keyup keydown', function(event) {
-    //     console.log('select-1: key event', event);
-    // });
+    // autocomplete
+    $('#select-4').pfDropdown({
+        autocomplete: true,
+        useOriginalStyles: false,
+        ajax: {
+            url: 'http://localhost:9101/get-items'
+        },
+        callbacks: {
+            ajaxDataBuilder(currentData, $original, $container, settings) {
+
+                console.log(currentData);
+
+                //let myData = $.extend(currentData, {myParam: 'my value'});
+                //return myData;
+            }
+        }
+    }).on('keypress keyup keydown', function(event) {
+        console.log('select-1: key event', event);
+    });
 
 });

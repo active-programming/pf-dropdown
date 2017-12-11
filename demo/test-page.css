@@ -10,6 +10,14 @@ html {
     html body h2 {
       font-size: 14px;
       font-family: monospace; }
+    html body .note {
+      display: inline-block;
+      color: #fff;
+      font-family: sans-serif;
+      font-size: 12px;
+      padding: 4px;
+      background-color: #737373;
+      margin-bottom: 8px; }
 
 /* original select styles */
 #select-1 {

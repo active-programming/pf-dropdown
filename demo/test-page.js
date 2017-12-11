@@ -9561,27 +9561,25 @@ $(function ($) {
         plugins: [new _pluginSelect4.default()]
     });
 
-    // todo autocomplete
-    // $('#select-4').pfDropdown({
-    //     containerClass: 'pf-dropdown',
-    //     useOriginalStyles: true,
-    //     callbacks: {
-    //         onRendered: function ($original, $container) {
-    //             console.log('RENDERED!', $container[0], $original[0]);
-    //         },
-    //         onOverItem: function ($item, data) {
-    //             $item.css('background-color', 'magenta');
-    //         },
-    //         onLeaveItem: function ($item, data) {
-    //             $item.css('background-color', '');
-    //         }
-    //     },
-    //     plugins: [
-    //         new PluginSelect1()
-    //     ]
-    // }).on('keypress keyup keydown', function(event) {
-    //     console.log('select-1: key event', event);
-    // });
+    // autocomplete
+    $('#select-4').pfDropdown({
+        autocomplete: true,
+        useOriginalStyles: false,
+        ajax: {
+            url: 'http://localhost:9101/get-items'
+        },
+        callbacks: {
+            ajaxDataBuilder: function ajaxDataBuilder(currentData, $original, $container, settings) {
+
+                console.log(currentData);
+
+                //let myData = $.extend(currentData, {myParam: 'my value'});
+                //return myData;
+            }
+        }
+    }).on('keypress keyup keydown', function (event) {
+        console.log('select-1: key event', event);
+    });
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -9859,6 +9857,12 @@ var pfDropdown = function () {
             this._replaceOriginalOptions(this.$original, this.items, this.groups);
             // render new items list
             this._renderList(this.$container, this.items, this.groups);
+            if (this.settings.autocomplete === true) {
+                if (this.$container.find('.pf-dropdown-item').length > 0) {
+                    this.$container.find('.pf-dropdown-frame').css('display', '');
+                    this._executeCallback('onOpen', this.$original, this.$container);
+                }
+            }
 
             // todo events
 
@@ -10130,9 +10134,6 @@ var pfDropdown = function () {
             $container.find('.pf-dropdown-list').html($listItems);
             // set current item
             var item = this._getSelectedItem();
-
-            console.log('SELECTED', item);
-
             if (item !== null) {
                 var $item = this._renderItem(item);
                 if ($item !== false) this._selectItem($item, item);

@@ -186,6 +186,12 @@ class pfDropdown {
         this._replaceOriginalOptions(this.$original, this.items, this.groups);
         // render new items list
         this._renderList(this.$container, this.items, this.groups);
+        if (this.settings.autocomplete === true) {
+            if (this.$container.find('.pf-dropdown-item').length > 0) {
+                this.$container.find('.pf-dropdown-frame').css('display', '');
+                this._executeCallback('onOpen', this.$original, this.$container);
+            }
+        }
 
         // todo events
 
@@ -347,9 +353,6 @@ class pfDropdown {
         $container.find('.pf-dropdown-list').html($listItems);
         // set current item
         let item = this._getSelectedItem();
-
-        console.log('SELECTED', item);
-
         if (item !== null) {
             let $item = this._renderItem(item);
             if ($item !== false)  this._selectItem($item, item);
