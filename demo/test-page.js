@@ -10001,6 +10001,10 @@ var pfDropdown = function () {
 
             $original.html('');
             if (items.length > 0) {
+                if (this.settings.autocomplete === true) {
+                    // we need to have empty option on beginning to have empty value by default until user select some value from list
+                    $original.append((0, _jquery2.default)(groups.length > 0 ? '<optgroup label="---"><option value="">---</option></optgroup>' : '<option value="">---</option>'));
+                }
                 if (groups.length > 0) {
                     // if there are groups
                     var _iteratorNormalCompletion4 = true;
