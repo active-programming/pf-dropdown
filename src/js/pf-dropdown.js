@@ -1,5 +1,4 @@
 'use strict';
-import $ from 'jquery';
 import plugin from './plugin';
 
 class pfDropdown {

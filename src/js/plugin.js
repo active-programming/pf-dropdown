@@ -1,4 +1,3 @@
-import $ from 'jquery';
 
 /**
  * Generate a jQuery plugin
