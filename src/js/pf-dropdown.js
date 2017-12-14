@@ -591,6 +591,9 @@ class pfDropdown {
                 this._selectItem($item, item);
                 this._executeCallback('onSelectItem', item);
             }
+        } else {
+            // update original <select>
+            this.$original.val('').trigger('change', ['by-widget-changed']);
         }
     }
 
