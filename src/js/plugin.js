@@ -19,7 +19,7 @@ export default function plugin(pluginName, className, shortHand = false) {
         originalPlugin = $.fn[pluginName];
 
     $.fn[pluginName] = function (option, param) {
-        param = param || null;
+        param = (typeof(param) === 'undefined') ? null : param;
         let methodResult = null,
             methodCalled = false;
         this.each(function () {

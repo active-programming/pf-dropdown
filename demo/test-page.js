@@ -9533,8 +9533,14 @@ $(function ($) {
     // set value by plugin
     $select1.pfDropdown('setValue', '2');
     console.log('pfDropdown.setValue()', $select1.pfDropdown('getValue'));
+    // set empty value
+    $select1.pfDropdown('setValue', '');
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
     // set value directly
     $select1.val('3').trigger('change'); // yes, you need to call 'change' event.
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
+    // set wrong value
+    $select1.pfDropdown('setValue', 'abc');
     console.log('#select-1.val()', $select1.pfDropdown('getValue'));
 
     $('#select-2').pfDropdown({
@@ -9749,7 +9755,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         });return this._replaceOriginalOptions(this.$original, this.items, this.groups), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete && this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)), [this.items, this.groups];
       } }, { key: "_deleteAllItems", value: function value() {
-        this.items = [], this.groups = [], this.$original.html(""), this.$container.find(".pf-dropdown-item").length > 0 && this.$container.find(".pf-dropdown-frame").css("display", "");
+        this.items = [], this.groups = [], this.$original.html(""), this.$container.find(".pf-dropdown-list").html(""), this.$container.find(".pf-dropdown-frame").css("display", "none");
       } }, { key: "_getSelectedItem", value: function value() {
         var t = this.$original.find("option:selected").attr("value");return t = t || "", this._getItemByValue(t);
       } }, { key: "_getItemByValue", value: function value(t) {
@@ -9812,31 +9818,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
           }
         } else {
-          var y = !0,
-              v = !1,
+          var v = !0,
+              y = !1,
               m = void 0;try {
-            for (var b, _ = e[Symbol.iterator](); !(y = (b = _.next()).done); y = !0) {
+            for (var b, _ = e[Symbol.iterator](); !(v = (b = _.next()).done); v = !0) {
               var x = b.value;t.append($("<option></option>").attr("value", x.value).html(x.title));
             }
           } catch (t) {
-            v = !0, m = t;
+            y = !0, m = t;
           } finally {
             try {
-              !y && _.return && _.return();
+              !v && _.return && _.return();
             } finally {
-              if (v) throw m;
+              if (y) throw m;
             }
           }
         }
       } }, { key: "_renderWidget", value: function value(t, e) {
         var n = this;return this.$container = this._renderContainer(this.$original, this.settings), this.$input = this.$container.find(".pf-input"), this._renderList(this.$container, t, e), this.$container.find(".pf-input-frame").on("click", function (t) {
           if (t.preventDefault(), !0 === n.settings.autocomplete) {
-            n.$input.val().length >= n.settings.minLength ? n._loadRemoteItems() : n._deleteAllItems();
+            var e = n.$input.val();n._deleteAllItems(), e.length >= n.settings.minLength && n._loadRemoteItems();
           }return n._toggleDropdown(), !1;
         }), this.$original.on("change", function (t, e) {
           if ("by-widget-changed" === (e = e || "")) return !1;n.setValue($(t.currentTarget).val());
         }), this.settings.autocomplete && this.$input.on("keypress keyup keydown", function (t) {
-          var e = $(t.currentTarget).val();n.$original.trigger(t), n._executeCallback("onInputKeyEvent", t, $(t.currentTarget)), "keyup" === t.type && (e.length >= n.settings.minLength ? n._loadRemoteItems() : n._deleteAllItems());
+          var e = $(t.currentTarget).val();n.$original.trigger(t), n._executeCallback("onInputKeyEvent", t, $(t.currentTarget)), "keyup" === t.type && (n._deleteAllItems(), e.length >= n.settings.minLength && n._loadRemoteItems());
         }), $("body").on("click pf-dropdown-click", function (t) {
           "none" !== n.$container.find(".pf-dropdown-frame").css("display") && (n.$container.find(".pf-dropdown-frame").css("display", "none"), n._executeCallback("onClose", n.$original, n.$container));
         }), this.$container;
@@ -9896,7 +9902,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           var n = $(t.currentTarget),
               i = e._getItemByValue(n.data("item_value"));e._executeCallback("onLeaveItem", n, i);
         }), i.on("click", function (t) {
-          var n = e._getItemByValue($(t.currentTarget).data("item_value"));e._selectItem($(t.currentTarget), n), e._executeCallback("onSelectItem", n), e._toggleDropdown();
+          var n = e._getItemByValue($(t.currentTarget).data("item_value"));e._selectItem($(t.currentTarget), n), e._toggleDropdown();
         }), i;
       } }, { key: "_renderGroup", value: function value(t, e) {
         var n = $(this.groupTmpl).attr("data-group_id", t.id);n.find(".pf-group-item").html(t.label), e instanceof $ && n.find(".pf-dropdown-group-items").html(e);var i = this._executeCallback("renderGroup", n.clone(!0), t, e, this.$original, this.$container, this.settings);return i instanceof $ || (i = n), i;
@@ -9904,7 +9910,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         $("body").trigger("pf-dropdown-click");var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container));
       } }, { key: "_selectItem", value: function value(t, e) {
         var n = this.$container.find(".pf-input"),
-            i = this.$container.find(".pf-decorated li");"html" === this.settings.displaySelectionAs ? (n.val(""), i.html(t.clone())) : (n.val(e.title), i.html("")), this.$original.val(e.value).trigger("change", ["by-widget-changed"]);
+            i = this.$container.find(".pf-decorated li"),
+            r = !$.isPlainObject(e);e = r ? { title: "", value: "", group: "", data: {} } : e, "html" === this.settings.displaySelectionAs ? (n.val(""), i.html(r ? "" : t.clone())) : (n.val(e.title), i.html("")), this._executeCallback("onSelectItem", e), this.$original.val(e.value).trigger("change", ["by-widget-changed"]);
       } }, { key: "_executeCallback", value: function value(t) {
         for (var e = "on" === t.substring(0, 2), n = arguments.length, i = Array(n > 1 ? n - 1 : 0), a = 1; a < n; a++) {
           i[a - 1] = arguments[a];
@@ -9928,9 +9935,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "getValue", value: function value() {
         return this._getSelectedItem();
       } }, { key: "setValue", value: function value(t) {
-        var e = this._getItemByValue(t);if (null !== e) {
-          var n = this._renderItem(e);n instanceof $ && (this._selectItem(n, e), this._executeCallback("onSelectItem", e));
-        } else this.$original.val("").trigger("change", ["by-widget-changed"]);
+        var e = null,
+            n = this._getItemByValue(t);null !== n && (e = this._renderItem(n)), this._selectItem(e, n);
       } }]), t;
   }();(0, l.default)("pfDropdown", s);
 }, function (t, e, n) {
@@ -9939,7 +9945,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var n = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
         i = "__" + t,
         a = $.fn[t];$.fn[t] = function (n, a) {
-      a = a || null;var o = null,
+      a = void 0 === a ? null : a;var o = null,
           l = !1;return this.each(function () {
         var s = $(this),
             u = s.data(i),

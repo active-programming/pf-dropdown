@@ -31,8 +31,14 @@ $(function($) {
     // set value by plugin
     $select1.pfDropdown('setValue', '2');
     console.log('pfDropdown.setValue()',  $select1.pfDropdown('getValue'));
+    // set empty value
+    $select1.pfDropdown('setValue', '');
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
     // set value directly
     $select1.val('3').trigger('change'); // yes, you need to call 'change' event.
+    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
+    // set wrong value
+    $select1.pfDropdown('setValue', 'abc');
     console.log('#select-1.val()', $select1.pfDropdown('getValue'));
 
 

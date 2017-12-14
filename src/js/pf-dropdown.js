@@ -203,9 +203,8 @@ class pfDropdown {
         this.items = [];
         this.groups = [];
         this.$original.html('');
-        if (this.$container.find('.pf-dropdown-item').length > 0) {
-            this.$container.find('.pf-dropdown-frame').css('display', '');
-        }
+        this.$container.find('.pf-dropdown-list').html('');
+        this.$container.find('.pf-dropdown-frame').css('display', 'none');
     }
 
 
@@ -322,10 +321,9 @@ class pfDropdown {
             event.preventDefault();
             if (this.settings.autocomplete === true) {
                 let term = this.$input.val();
+                this._deleteAllItems();
                 if (term.length >= this.settings.minLength) {
                     this._loadRemoteItems();
-                } else {
-                    this._deleteAllItems();
                 }
             }
             this._toggleDropdown();
@@ -343,10 +341,9 @@ class pfDropdown {
                 this.$original.trigger(event);
                 this._executeCallback('onInputKeyEvent', event, $(event.currentTarget));
                 if (event.type === 'keyup') {
+                    this._deleteAllItems();
                     if (term.length >= this.settings.minLength) {
                         this._loadRemoteItems();
-                    } else {
-                        this._deleteAllItems();
                     }
                 }
             });
@@ -472,7 +469,6 @@ class pfDropdown {
         $item.on('click', (event) => {
             let item = this._getItemByValue($(event.currentTarget).data('item_value'));
             this._selectItem($(event.currentTarget), item);
-            this._executeCallback('onSelectItem', item);
             this._toggleDropdown(); // todo for multiple we don't need to close it
         });
         return $item;
@@ -516,20 +512,23 @@ class pfDropdown {
     }
 
 
-    _selectItem($item, data)
+    _selectItem($item, item)
     {
         let $input = this.$container.find('.pf-input'),
-            $frame = this.$container.find('.pf-decorated li');
+            $frame = this.$container.find('.pf-decorated li'),
+            isUndefined = !$.isPlainObject(item);
+        item = isUndefined ? {title: '', value: '', group: '', data: {}} : item;
         if (this.settings.displaySelectionAs === 'html') {
             $input.val('');
-            $frame.html($item.clone());
+            $frame.html(isUndefined ? '' : $item.clone());
         } else {
             // text
-            $input.val(data.title);
+            $input.val(item.title);
             $frame.html('');
         }
+        this._executeCallback('onSelectItem', item);
         // update original <select>
-        this.$original.val(data.value).trigger('change', ['by-widget-changed']);
+        this.$original.val(item.value).trigger('change', ['by-widget-changed']);
     }
 
 
@@ -570,7 +569,7 @@ class pfDropdown {
     // Public methods
 
     /**
-     * @return {Object} {value: "123", title: "Numbers", data: {Object} }
+     * @return {Object} {value: "123", title: "Numbers", group: "", data: {Object} }
      */
     getValue()
     {
@@ -583,17 +582,12 @@ class pfDropdown {
      */
     setValue(value)
     {
-        let item = this._getItemByValue(value);
+        let $item = null,
+            item = this._getItemByValue(value);
         if (item !== null) {
-            let $item = this._renderItem(item);
-            if ($item instanceof $) {
-                this._selectItem($item, item);
-                this._executeCallback('onSelectItem', item);
-            }
-        } else {
-            // update original <select>
-            this.$original.val('').trigger('change', ['by-widget-changed']);
+            $item = this._renderItem(item);
         }
+        this._selectItem($item, item);
     }
 
 }
