@@ -385,7 +385,7 @@ class pfDropdown {
             let item = this._getSelectedItem();
             if (item !== null) {
                 let $item = this._renderItem(item);
-                if ($item !== false) this._selectItem($item, item);
+                if ($item !== false) this._selectItem($item, item, false);
             }
         }
     }
@@ -512,7 +512,7 @@ class pfDropdown {
     }
 
 
-    _selectItem($item, item)
+    _selectItem($item, item, fireEvent = true)
     {
         let $input = this.$container.find('.pf-input'),
             $frame = this.$container.find('.pf-decorated li'),
@@ -526,9 +526,12 @@ class pfDropdown {
             $input.val(item.title);
             $frame.html('');
         }
-        this._executeCallback('onSelectItem', item);
         // update original <select>
-        this.$original.val(item.value).trigger('change', ['by-widget-changed']);
+        this.$original.val(item.value);
+        if (fireEvent) {
+            this._executeCallback('onSelectItem', item);
+            this.$original.trigger('change');
+        }
     }
 
 
@@ -587,7 +590,7 @@ class pfDropdown {
         if (item !== null) {
             $item = this._renderItem(item);
         }
-        this._selectItem($item, item);
+        this._selectItem($item, item, false);
     }
 
 }

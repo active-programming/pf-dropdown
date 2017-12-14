@@ -9867,7 +9867,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         } else i = this._renderItems(e);if (t.find(".pf-dropdown-list").html(i), !0 !== this.settings.autocomplete) {
           var p = this._getSelectedItem();if (null !== p) {
-            var f = this._renderItem(p);!1 !== f && this._selectItem(f, p);
+            var f = this._renderItem(p);!1 !== f && this._selectItem(f, p, !1);
           }
         }
       } }, { key: "_renderContainer", value: function value(t, e) {
@@ -9909,9 +9909,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_toggleDropdown", value: function value() {
         $("body").trigger("pf-dropdown-click");var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container));
       } }, { key: "_selectItem", value: function value(t, e) {
-        var n = this.$container.find(".pf-input"),
-            i = this.$container.find(".pf-decorated li"),
-            r = !$.isPlainObject(e);e = r ? { title: "", value: "", group: "", data: {} } : e, "html" === this.settings.displaySelectionAs ? (n.val(""), i.html(r ? "" : t.clone())) : (n.val(e.title), i.html("")), this._executeCallback("onSelectItem", e), this.$original.val(e.value).trigger("change", ["by-widget-changed"]);
+        var n = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2],
+            i = this.$container.find(".pf-input"),
+            r = this.$container.find(".pf-decorated li"),
+            a = !$.isPlainObject(e);e = a ? { title: "", value: "", group: "", data: {} } : e, "html" === this.settings.displaySelectionAs ? (i.val(""), r.html(a ? "" : t.clone())) : (i.val(e.title), r.html("")), this.$original.val(e.value), n && (this._executeCallback("onSelectItem", e), this.$original.trigger("change"));
       } }, { key: "_executeCallback", value: function value(t) {
         for (var e = "on" === t.substring(0, 2), n = arguments.length, i = Array(n > 1 ? n - 1 : 0), a = 1; a < n; a++) {
           i[a - 1] = arguments[a];
@@ -9936,7 +9937,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return this._getSelectedItem();
       } }, { key: "setValue", value: function value(t) {
         var e = null,
-            n = this._getItemByValue(t);null !== n && (e = this._renderItem(n)), this._selectItem(e, n);
+            n = this._getItemByValue(t);null !== n && (e = this._renderItem(n)), this._selectItem(e, n, !1);
       } }]), t;
   }();(0, l.default)("pfDropdown", s);
 }, function (t, e, n) {
