@@ -10,7 +10,7 @@
   ],
   "main": "distr/js/pf-dropdown.js",
   "description": "PF Dropdown is a jQuery-based custom <select> UI control.",
-  "version": "0.0.3b",
+  "version": "0.0.31b",
   "author": "Konstantin Kutsevalov <konstantin@kutsevalov.name>",
   "license": "MIT",
   "homepage": "https://github.com/active-programming/pf-dropdown#readme",
