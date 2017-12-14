@@ -1,5 +1,4 @@
 'use strict';
-import $ from 'jquery';
 import plugin from './plugin';
 
 class pfDropdown {
@@ -526,7 +525,7 @@ class pfDropdown {
             $frame.html($item.clone());
         } else {
             // text
-            $input.val(data.title); // TODO error
+            $input.val(data.title);
             $frame.html('');
         }
         // update original <select>

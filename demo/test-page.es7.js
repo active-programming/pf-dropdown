@@ -1,5 +1,5 @@
 import 'jquery';
-import './../src/js/pf-dropdown';
+import './../distr/js/pf-dropdown';
 import PluginSelect1 from './plugin-select-1';
 import PluginSelect3 from './plugin-select-3';
 require('!style-loader!css-loader!./../distr/css/default.css');
