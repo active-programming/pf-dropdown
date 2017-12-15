@@ -9614,6 +9614,8 @@ $(function ($) {
     }).on('keypress keyup keydown', function (event) {
         //console.log('select-1: key event', event);
     });
+
+    console.log($('#select-5').val());
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -9696,7 +9698,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }(o),
       s = function () {
     function t(e) {
-      var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};i(this, t), this.containerTmpl = '<div class="pf-input-frame">\n            <ul class="pf-decorated" style="display:none"><li></li></ul>\n            <input type="text" class="pf-input" value="" style="background-color: transparent"/>\n            <a href="#" class="pf-arrow"><i></i></a>\n        </div>\n        <div class="pf-dropdown-frame" style="display:none">\n            <ul class="pf-dropdown-list"></ul>\n        </div>', this.groupTmpl = '<li class="pf-dropdown-group" data-group_id="">\n                <span class="pf-group-item"></span>\n            <ul class="pf-dropdown-group-items"></ul>\n        </li>', this.itemTmpl = '<li class="pf-dropdown-item" data-item_value=""></li>', this.$original = $([]), this.$container = $([]), this.$input = $([]), this.$ajax = null, this.groups = [], this.items = [], this.settings = { containerClass: "pf-dropdown", implementOriginalStyles: !0, displaySelectionAs: "text", autocomplete: !1, minLength: 2, ajax: { loadOnInit: !1, url: "", type: "get", dataType: "json", valueKey: "value", titleKey: "title", dataKey: "dataset" }, plugins: [], callbacks: { onRendered: null, onClose: null, onOpen: null, onOverItem: null, onLeaveItem: null, onSelectItem: null, onInputKeyEvent: null, renderItem: null, renderGroup: null, ajaxDataBuilder: null, ajaxResponseFilter: null } }, this.$original = $(e);var r = $.extend({}, this.settings, n);r.ajax = $.extend({}, this.settings.ajax, n.ajax), r.callbacks = $.extend({}, this.settings.callbacks, n.callbacks), this.settings = r, this._loadOriginalOptions(), this._renderWidget(this.items, this.groups), this._executeCallback("onRendered", this.$original, this.$container), "" !== $.trim(this.settings.ajax.url) && !0 === this.settings.ajax.loadOnInit && this._loadRemoteItems();
+      var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};i(this, t), this.containerTmpl = '<div class="pf-input-frame">\n            <ul class="pf-decorated" style="display:none"><li></li></ul>\n            <input type="text" class="pf-input" value="" style="background-color: transparent"/>\n            <a href="#" class="pf-arrow"><i></i></a>\n        </div>\n        <div class="pf-dropdown-frame" style="display:none">\n            <ul class="pf-dropdown-list"></ul>\n        </div>', this.groupTmpl = '<li class="pf-dropdown-group" data-group_id="">\n                <span class="pf-group-item"></span>\n            <ul class="pf-dropdown-group-items"></ul>\n        </li>', this.itemTmpl = '<li class="pf-dropdown-item" data-item_value=""></li>', this.$original = $([]), this.$container = $([]), this.$input = $([]), this.$ajax = null, this.groups = [], this.items = [], this.settings = { containerClass: "pf-dropdown", implementOriginalStyles: !0, displaySelectionAs: "text", autocomplete: !1, minLength: 2, multiselect: null, closeOnSelect: !0, ajax: { loadOnInit: !1, url: "", type: "get", dataType: "json", valueKey: "value", titleKey: "title", dataKey: "dataset" }, plugins: [], callbacks: { onRendered: null, onClose: null, onOpen: null, onOverItem: null, onLeaveItem: null, onSelectItem: null, onInputKeyEvent: null, renderItem: null, renderGroup: null, ajaxDataBuilder: null, ajaxResponseFilter: null } }, this.$original = $(e);var r = $.extend({}, this.settings, n);r.ajax = $.extend({}, this.settings.ajax, n.ajax), r.callbacks = $.extend({}, this.settings.callbacks, n.callbacks), this.settings = r, this._loadOriginalOptions(), this._renderWidget(this.items, this.groups), this._executeCallback("onRendered", this.$original, this.$container), "" !== $.trim(this.settings.ajax.url) && !0 === this.settings.ajax.loadOnInit && this._loadRemoteItems();
     }return a(t, [{ key: "_loadOriginalOptions", value: function value() {
         var t = this,
             e = this.$original.find("optgroup"),
@@ -9761,9 +9763,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });return this._replaceOriginalOptions(this.$original, this.items, this.groups), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete && this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)), [this.items, this.groups];
       } }, { key: "_deleteAllItems", value: function value() {
         this.items = [], this.groups = [], this.$original.html(""), this.$container.find(".pf-dropdown-list").html(""), this.$container.find(".pf-dropdown-frame").css("display", "none");
-      } }, { key: "_getSelectedItem", value: function value() {
-        var t = this.$original.find("option:selected").attr("value");return t = t || "", this._getItemByValue(t);
-      } }, { key: "_getItemByValue", value: function value(t) {
+      } }, { key: "_getSelectedItems", value: function value() {
+        var t = this.$original.find("option:selected").attr("value");return t = t || "", this._getItemsByValues(t);
+      } }, { key: "_getItemsByValues", value: function value(t) {
         if (this.items.length > 0) {
           var e = !0,
               n = !1,
@@ -9871,7 +9873,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
           }
         } else i = this._renderItems(e);if (t.find(".pf-dropdown-list").html(i), !0 !== this.settings.autocomplete) {
-          var p = this._getSelectedItem();if (null !== p) {
+          var p = this._getSelectedItems();if (null !== p) {
             var f = this._renderItem(p);!1 !== f && this._selectItem(f, p, !1);
           }
         }
@@ -9902,12 +9904,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var e = this;if (t = t || !1, !$.isPlainObject(t)) return !1;if ([r(t.id), r(t.value), r(t.title)].includes("undfined")) return !1;var n = $(this.itemTmpl).attr("data-item_value", t.value).html(t.title),
             i = this._executeCallback("renderItem", n.clone(), t, this.$original, this.$container, this.settings);return i instanceof $ && i.hasClass("pf-dropdown-item") && i.data("item_value") || (i = n), i.hover(function (t) {
           var n = $(t.currentTarget),
-              i = e._getItemByValue(n.data("item_value"));e._executeCallback("onOverItem", n, i);
+              i = e._getItemsByValues(n.data("item_value"));e._executeCallback("onOverItem", n, i);
         }, function (t) {
           var n = $(t.currentTarget),
-              i = e._getItemByValue(n.data("item_value"));e._executeCallback("onLeaveItem", n, i);
+              i = e._getItemsByValues(n.data("item_value"));e._executeCallback("onLeaveItem", n, i);
         }), i.on("click", function (t) {
-          var n = e._getItemByValue($(t.currentTarget).data("item_value"));e._selectItem($(t.currentTarget), n), e._toggleDropdown();
+          var n = e._getItemsByValues($(t.currentTarget).data("item_value"));e._selectItem($(t.currentTarget), n), e._toggleDropdown();
         }), i;
       } }, { key: "_renderGroup", value: function value(t, e) {
         var n = $(this.groupTmpl).attr("data-group_id", t.id);n.find(".pf-group-item").html(t.label), e instanceof $ && n.find(".pf-dropdown-group-items").html(e);var i = this._executeCallback("renderGroup", n.clone(!0), t, e, this.$original, this.$container, this.settings);return i instanceof $ || (i = n), i;
@@ -9939,10 +9941,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }return i[0];
       } }, { key: "getValue", value: function value() {
-        return this._getSelectedItem();
+        return this._getSelectedItems();
       } }, { key: "setValue", value: function value(t) {
         var e = null,
-            n = this._getItemByValue(t);null !== n && (e = this._renderItem(n)), this._selectItem(e, n, !1);
+            n = this._getItemsByValues(t);null !== n && (e = this._renderItem(n)), this._selectItem(e, n, !1);
       } }]), t;
   }();(0, l.default)("pfDropdown", s);
 }, function (t, e, n) {

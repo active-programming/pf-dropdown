@@ -39,5 +39,15 @@ html {
   width: 200px;
   background-color: #fff; }
 
+#select-5 {
+  border: 1px solid #ff6868;
+  font-size: 13px;
+  color: #ff9000;
+  font-family: monospace;
+  line-height: 20px;
+  height: 150px;
+  width: 100px;
+  background-color: #fff; }
+
 .margin-10-0 {
   margin: 10px 0; }

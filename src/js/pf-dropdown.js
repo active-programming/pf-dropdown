@@ -32,7 +32,8 @@ class pfDropdown {
         displaySelectionAs: 'text', // 'text', 'html'
         autocomplete: false,
         minLength: 2, // minimal term size
-        //closeOnSelect: true, // next release, setting of tags
+        multiple: null, // may be True or False, BUT it make sense to use <select multiple> instead this option
+        closeOnSelect: true,
         ajax: {
             loadOnInit: false,
             url: '',
@@ -96,7 +97,8 @@ class pfDropdown {
                 let $o = $(o),
                     data = {},
                     dataset = $o.data('set'),
-                    value = $o.attr('value') ? $o.attr('value') : '';
+                    value = $o.attr('value') ? $o.attr('value') : '',
+                    selected = $o.prop('selected') ? true : false;
                 try {
                     data = (typeof(dataset) === 'string') ? $.parseJSON(dataset) : dataset;
                 } catch (ex) {
@@ -106,7 +108,8 @@ class pfDropdown {
                     group: groupId,
                     value: value,
                     title: $o.text() ? $o.text() : '',
-                    data: data ? data : {}
+                    data: data ? data : {},
+                    selected: selected
                 });
             });
         };
@@ -162,7 +165,13 @@ class pfDropdown {
             addItemFn = (item, groupId = '') => {
                 if ($.isPlainObject(item)) {
                     if (item[keys.dataKey] && item[keys.valueKey] && item[keys.titleKey]) {
-                        this.items.push({group: groupId, value: item[keys.valueKey], title: item[keys.titleKey], data: item[keys.dataKey]});
+                        this.items.push({
+                            group: groupId,
+                            value: item[keys.valueKey],
+                            title: item[keys.titleKey],
+                            data: item[keys.dataKey],
+                            selected: (typeof(item['selected']) !== undefined) ? item['selected'] : false
+                        });
                     } else {
                         console.warn('Item doesn\'t contain needed keys: ' + keys.titleKey + ', ' + keys.valueKey + ', ' + keys.dataKey, item);
                     }
@@ -214,27 +223,38 @@ class pfDropdown {
     }
 
 
-    _getSelectedItem()
+    _getSelectedItems()
     {
-        // todo what about multiple?
-        let currentValue = this.$original.find('option:selected').attr('value');
-        currentValue = currentValue || '';
-        return this._getItemByValue(currentValue);
+        let selectedValues = this.$original.val();
+        selectedValues = selectedValues || [];
+        if (!$.isArray(selectedValues)) {
+            selectedValues = [selectedValues];
+        }
+        return this._getItemsByValues(selectedValues);
     }
 
 
     /**
      * Returns all Items data by its value
-     * @param {string} value
-     * @return {null|Object}
+     * @param {string|array} values
+     * @return {null|array}  [index, item_object]
      * @private
      */
-    _getItemByValue(value)
+    _getItemsByValues(values)
     {
+        if (!$.isArray(values)) {
+            values = [values];
+        }
         if (this.items.length > 0) {
-            for (let item of this.items) {
-                if (item.value == value) return item;
+            let selectedItems = [];
+            for (let value of values) {
+                for (let key in this.items) {
+                    if (this.items[key].value == value) {
+                        selectedItems.push([key, this.items[key]]);
+                    }
+                }
             }
+            if (selectedItems.length > 0)  return selectedItems;
         }
         return null;
     }
@@ -304,7 +324,7 @@ class pfDropdown {
             } else {
                 // if there are no groups
                 for (let item of items) {
-                    $original.append( $('<option></option>').attr('value', item.value).html(item.title) );
+                    $original.append( $('<option></option>').attr('value', item.value).prop('selected', item.selected).html(item.title) );
                 }
             }
         }
@@ -389,10 +409,12 @@ class pfDropdown {
         $container.find('.pf-dropdown-list').html($listItems);
         // set current item
         if (this.settings.autocomplete !== true) {
-            let item = this._getSelectedItem();
-            if (item !== null) {
+            let items = this._getSelectedItems();
+            if (items !== null) {
+                // TODO remove render
                 let $item = this._renderItem(item);
-                if ($item !== false) this._selectItem($item, item, false);
+                if ($item !== false) this._selectItem($item, items, false);
+
             }
         }
     }
@@ -461,22 +483,30 @@ class pfDropdown {
         if (!($item instanceof $) || !$item.hasClass('pf-dropdown-item') || !$item.data('item_value')) {
             $item = $itemOrig;
         }
+        if (item.selected)  $item.addClass('selected');
         $item.hover(
             (event) => {
                 let $item = $(event.currentTarget),
-                    data = this._getItemByValue($item.data('item_value'));
-                this._executeCallback('onOverItem', $item, data);
+                    item = this._getItemsByValues($item.data('item_value'));
+                if (item !== null && item[1]) {
+                    this._executeCallback('onOverItem', $item, item[1]);
+                }
             },
             (event) => {
                 let $item = $(event.currentTarget),
-                    data = this._getItemByValue($item.data('item_value'));
-                this._executeCallback('onLeaveItem', $item, data);
+                    item = this._getItemsByValues($item.data('item_value'));
+                if (item !== null && item[1]) {
+                    this._executeCallback('onLeaveItem', $item, item[1]);
+                }
             }
         );
         $item.on('click', (event) => {
-            let item = this._getItemByValue($(event.currentTarget).data('item_value'));
-            this._selectItem($(event.currentTarget), item);
-            this._toggleDropdown(); // todo for multiple we don't need to close it
+            let item = this._getItemsByValues($(event.currentTarget).data('item_value'));
+            if (item !== null && item[1]) {
+                this._selectItem($(event.currentTarget), item[1], item[0]);
+            }
+            if (!this.settings.closeOnSelect)  return;
+            this._toggleDropdown();
         });
         return $item;
     }
@@ -521,6 +551,9 @@ class pfDropdown {
 
     _selectItem($item, item, fireEvent = true)
     {
+
+        // TODO "Selected (4)"
+
         let $input = this.$container.find('.pf-input'),
             $frame = this.$container.find('.pf-decorated li'),
             isUndefined = !$.isPlainObject(item);
@@ -583,7 +616,12 @@ class pfDropdown {
      */
     getValue()
     {
-        return this._getSelectedItem();
+        let values = [],
+            selectedItems = this._getSelectedItems();
+        for (let itm of selectedItems) {
+            values.push(itm[1]); // without keys, items only
+        }
+        return values;
     }
 
 
@@ -593,7 +631,7 @@ class pfDropdown {
     setValue(value)
     {
         let $item = null,
-            item = this._getItemByValue(value);
+            item = this._getItemsByValues(value);
         if (item !== null) {
             $item = this._renderItem(item);
         }

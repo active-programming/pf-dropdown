@@ -96,4 +96,6 @@ $(function($) {
         //console.log('select-1: key event', event);
     });
 
+    console.log( $('#select-5').val() );
+
 });

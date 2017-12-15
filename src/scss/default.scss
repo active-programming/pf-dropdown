@@ -76,6 +76,9 @@ $pf-height: 22px;
         display: block;
         padding: 4px;
         border-bottom: 1px solid #ddd;
+        &.selected {
+          baclground-color: #76c7dd;
+        }
       }
       .pf-dropdown-group {
         font-weight: bold;
