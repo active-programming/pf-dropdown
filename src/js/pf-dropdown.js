@@ -94,13 +94,19 @@ class pfDropdown {
         let itemsLoopFn = ($options, groupId) => {
             $options.each((_, o) => {
                 let $o = $(o),
+                    data = {},
                     dataset = $o.data('set'),
                     value = $o.attr('value') ? $o.attr('value') : '';
+                try {
+                    data = (typeof(dataset) === 'string') ? $.parseJSON(dataset) : dataset;
+                } catch (ex) {
+                    console.warn('data-set contains wrong value:', dataset);
+                }
                 this.items.push({
                     group: groupId,
                     value: value,
                     title: $o.text() ? $o.text() : '',
-                    data: dataset ? $.parseJSON(dataset) : {}
+                    data: data ? data : {}
                 });
             });
         };
@@ -317,8 +323,9 @@ class pfDropdown {
         this.$input = this.$container.find('.pf-input');
         this._renderList(this.$container, items, groups);
         // bind events
-        this.$container.find('.pf-input-frame').on('click', (event) => {
+        this.$container.find('.pf-input-frame, .pf-input, .pf-arrow').on('click', (event) => {
             event.preventDefault();
+            event.stopPropagation();
             if (this.settings.autocomplete === true) {
                 let term = this.$input.val();
                 this._deleteAllItems();
@@ -498,12 +505,12 @@ class pfDropdown {
 
     _toggleDropdown()
     {
-        $('body').trigger('pf-dropdown-click');
         let $dropdown = this.$container.find('.pf-dropdown-frame');
         if ($dropdown.css('display') !== 'none') {
             $dropdown.css('display', 'none');
             this._executeCallback('onClose', this.$original, this.$container);
         } else {
+            $('body').trigger('pf-dropdown-click');
             if (this.$container.find('.pf-dropdown-item').length > 0) {
                 $dropdown.css('display', '');
                 this._executeCallback('onOpen', this.$original, this.$container);

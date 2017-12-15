@@ -9703,8 +9703,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             n = function n(e, _n) {
           e.each(function (e, i) {
             var r = $(i),
-                a = r.data("set"),
-                o = r.attr("value") ? r.attr("value") : "";t.items.push({ group: _n, value: o, title: r.text() ? r.text() : "", data: a ? $.parseJSON(a) : {} });
+                a = {},
+                o = r.data("set"),
+                l = r.attr("value") ? r.attr("value") : "";try {
+              a = "string" == typeof o ? $.parseJSON(o) : o;
+            } catch (t) {
+              console.warn("data-set contains wrong value:", o);
+            }t.items.push({ group: _n, value: l, title: r.text() ? r.text() : "", data: a || {} });
           });
         };e.length > 0 ? e.each(function (e, i) {
           var r = t.groups.length + 1;t.groups.push({ id: r, label: $(i).attr("label") }), n($(i).find("option"), r);
@@ -9835,8 +9840,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }
       } }, { key: "_renderWidget", value: function value(t, e) {
-        var n = this;return this.$container = this._renderContainer(this.$original, this.settings), this.$input = this.$container.find(".pf-input"), this._renderList(this.$container, t, e), this.$container.find(".pf-input-frame").on("click", function (t) {
-          if (t.preventDefault(), !0 === n.settings.autocomplete) {
+        var n = this;return this.$container = this._renderContainer(this.$original, this.settings), this.$input = this.$container.find(".pf-input"), this._renderList(this.$container, t, e), this.$container.find(".pf-input-frame, .pf-input, .pf-arrow").on("click", function (t) {
+          if (t.preventDefault(), t.stopPropagation(), !0 === n.settings.autocomplete) {
             var e = n.$input.val();n._deleteAllItems(), e.length >= n.settings.minLength && n._loadRemoteItems();
           }return n._toggleDropdown(), !1;
         }), this.$original.on("change", function (t, e) {
@@ -9907,7 +9912,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_renderGroup", value: function value(t, e) {
         var n = $(this.groupTmpl).attr("data-group_id", t.id);n.find(".pf-group-item").html(t.label), e instanceof $ && n.find(".pf-dropdown-group-items").html(e);var i = this._executeCallback("renderGroup", n.clone(!0), t, e, this.$original, this.$container, this.settings);return i instanceof $ || (i = n), i;
       } }, { key: "_toggleDropdown", value: function value() {
-        $("body").trigger("pf-dropdown-click");var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container));
+        var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : ($("body").trigger("pf-dropdown-click"), this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)));
       } }, { key: "_selectItem", value: function value(t, e) {
         var n = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2],
             i = this.$container.find(".pf-input"),
