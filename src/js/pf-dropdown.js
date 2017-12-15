@@ -100,7 +100,7 @@ class pfDropdown {
                     group: groupId,
                     value: value,
                     title: $o.text() ? $o.text() : '',
-                    data: dataset ? dataset : {}
+                    data: dataset ? $.parseJSON(dataset) : {}
                 });
             });
         };
