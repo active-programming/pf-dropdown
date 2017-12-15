@@ -9704,7 +9704,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           e.each(function (e, i) {
             var r = $(i),
                 a = r.data("set"),
-                o = r.attr("value") ? r.attr("value") : "";t.items.push({ group: _n, value: o, title: r.text() ? r.text() : "", data: a || {} });
+                o = r.attr("value") ? r.attr("value") : "";t.items.push({ group: _n, value: o, title: r.text() ? r.text() : "", data: a ? $.parseJSON(a) : {} });
           });
         };e.length > 0 ? e.each(function (e, i) {
           var r = t.groups.length + 1;t.groups.push({ id: r, label: $(i).attr("label") }), n($(i).find("option"), r);
