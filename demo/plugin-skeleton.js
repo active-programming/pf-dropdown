@@ -53,6 +53,11 @@ export default class {
 
     }
 
+    onUnselectItem(item)
+    {
+
+    }
+
     onBeforeAddItem(item)
     {
         // return item or false;
@@ -74,6 +79,12 @@ export default class {
     }
 
     // preProcessors methods
+
+    renderChoice($view, items, $original, $container, settings)
+    {
+        // $view.addClass('my-class-name');
+        // return $view;
+    }
 
     renderItem($item, item, $original, $container, settings)
     {

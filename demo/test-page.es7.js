@@ -34,9 +34,6 @@ $(function($) {
     // set empty value
     $select1.pfDropdown('setValue', '');
     console.log('#select-1.val()', $select1.pfDropdown('getValue'));
-    // set value directly
-    $select1.val('3').trigger('change'); // yes, you need to call 'change' event.
-    console.log('#select-1.val()', $select1.pfDropdown('getValue'));
     // set wrong value
     $select1.pfDropdown('setValue', 'abc');
     console.log('#select-1.val()', $select1.pfDropdown('getValue'));
@@ -90,12 +87,40 @@ $(function($) {
                     dataset: item.data
                 });
                 return response;
+            },
+            onSelectItem(item)
+            {
+                console.log('onSelectItem', item);
+                console.log('real selected', $('#select-4').pfDropdown('getValue'));
+            },
+            onUnselectItem(item)
+            {
+                console.log('onUnselectItem', item);
             }
         }
     }).on('keypress keyup keydown', function(event) {
         //console.log('select-1: key event', event);
     });
 
-    console.log( $('#select-5').val() );
+    $('#select-5').pfDropdown({
+        useOriginalStyles: false,
+        displaySelectionAs: 'html',
+        callbacks: {
+            renderChoice($view, items, $original, $container, settings)
+            {
+                $view.addClass('hey-you');
+                return $view;
+            },
+            onSelectItem(item)
+            {
+                console.log('onSelectItem', item);
+                console.log('real selected', $('#select-5').pfDropdown('getValue'));
+            },
+            onUnselectItem(item)
+            {
+                console.log('onUnselectItem', item);
+            }
+        }
+    });
 
 });

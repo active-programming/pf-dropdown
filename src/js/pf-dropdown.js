@@ -25,6 +25,7 @@ class pfDropdown {
     $ajax = null;
     groups = [];
     items = [];
+    isMultiple = false;
 
     settings = {
         containerClass: 'pf-dropdown',
@@ -32,7 +33,6 @@ class pfDropdown {
         displaySelectionAs: 'text', // 'text', 'html'
         autocomplete: false,
         minLength: 2, // minimal term size
-        multiple: null, // may be True or False, BUT it make sense to use <select multiple> instead this option
         closeOnSelect: true,
         ajax: {
             loadOnInit: false,
@@ -54,6 +54,7 @@ class pfDropdown {
             onOverItem: null, // ($item, item) => { },
             onLeaveItem: null, // ($item, item) => { },
             onSelectItem: null, // (item) => { },
+            onUnselectItem: null, // (item) => { },
             // onBeforeAddItem: null, // (item) => { return item or false; },
             // onAddItem: null, // ($item, item) => { },
             // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
@@ -62,6 +63,7 @@ class pfDropdown {
             // data preprocessors
             renderItem: null, // ($item, item, $original, $container, settings) => { return $item; },
             renderGroup: null, // ($group, group, $items, $original, $container, settings) => { return $group; },
+            renderChoice: null, // ($view, items, $original, $container, settings) => { return $view; },
             ajaxDataBuilder: null, // (currentData, $original, $container, settings) => { return currentData; },
             ajaxResponseFilter: null //(json, settings) => { return json; },
         }
@@ -76,10 +78,14 @@ class pfDropdown {
         settings.ajax = $.extend({}, this.settings.ajax, options.ajax);
         settings.callbacks = $.extend({}, this.settings.callbacks, options.callbacks);
         this.settings = settings;
+        this.isMultiple = this.$original.prop('multiple') ? true : false;
+        // it cannot be multiple and autocomplete at same time, this is not dropdown behavior (tags)
+        if (this.isMultiple)  this.settings.autocomplete = false;
         // load current options of original selector
         this._loadOriginalOptions();
         // render widget
         this._renderWidget(this.items, this.groups);
+        this._renderChoice();
         // trigger event
         this._executeCallback('onRendered', this.$original, this.$container);
         // load remote data
@@ -105,6 +111,7 @@ class pfDropdown {
                     console.warn('data-set contains wrong value:', dataset);
                 }
                 this.items.push({
+                    index: this.items.length,
                     group: groupId,
                     value: value,
                     title: $o.text() ? $o.text() : '',
@@ -148,6 +155,17 @@ class pfDropdown {
                 data = json;
             }
             this._loadItemsFromResponse(data);
+            // render new items list
+            this._renderList(this.$container, this.items, this.groups);
+            // open loaded items for autocomplete or display current choise
+            if (this.settings.autocomplete === true) {
+                if (this.$container.find('.pf-dropdown-item').length > 0) {
+                    this.$container.find('.pf-dropdown-frame').css('display', '');
+                    this._executeCallback('onOpen', this.$original, this.$container);
+                }
+            } else {
+                this._renderChoice();
+            }
         });
     }
 
@@ -166,6 +184,7 @@ class pfDropdown {
                 if ($.isPlainObject(item)) {
                     if (item[keys.dataKey] && item[keys.valueKey] && item[keys.titleKey]) {
                         this.items.push({
+                            index: this.items.length,
                             group: groupId,
                             value: item[keys.valueKey],
                             title: item[keys.titleKey],
@@ -198,14 +217,6 @@ class pfDropdown {
         }
         // replace original options and rendering new items
         this._replaceOriginalOptions(this.$original, this.items, this.groups);
-        // render new items list
-        this._renderList(this.$container, this.items, this.groups);
-        if (this.settings.autocomplete === true) {
-            if (this.$container.find('.pf-dropdown-item').length > 0) {
-                this.$container.find('.pf-dropdown-frame').css('display', '');
-                this._executeCallback('onOpen', this.$original, this.$container);
-            }
-        }
 
         // todo events
 
@@ -223,10 +234,14 @@ class pfDropdown {
     }
 
 
+    /**
+     * @returns {Array}
+     * @private
+     */
     _getSelectedItems()
     {
         let selectedValues = this.$original.val();
-        selectedValues = selectedValues || [];
+        selectedValues = (selectedValues === null) ? '' : selectedValues;
         if (!$.isArray(selectedValues)) {
             selectedValues = [selectedValues];
         }
@@ -237,26 +252,23 @@ class pfDropdown {
     /**
      * Returns all Items data by its value
      * @param {string|array} values
-     * @return {null|array}  [index, item_object]
+     * @return {array}  [ item_object, ... ]
      * @private
      */
     _getItemsByValues(values)
     {
-        if (!$.isArray(values)) {
-            values = [values];
-        }
+        let foundItems = [];
+        if (!$.isArray(values))  values = [values];
         if (this.items.length > 0) {
-            let selectedItems = [];
             for (let value of values) {
-                for (let key in this.items) {
-                    if (this.items[key].value == value) {
-                        selectedItems.push([key, this.items[key]]);
+                for (let item of this.items) {
+                    if (item.value == value) {
+                        foundItems.push(item);
                     }
                 }
             }
-            if (selectedItems.length > 0)  return selectedItems;
         }
-        return null;
+        return foundItems;
     }
 
 
@@ -317,14 +329,16 @@ class pfDropdown {
                 for (let group of groups) {
                     let $optgroup = $('<optgroup></optgroup>').attr('label', group.label);
                     for (let item of items) {
-                        $optgroup.append( $('<option></option>').attr('value', item.value).html(item.title) );
+                        $optgroup.append( $('<option></option>').attr('value', item.value)
+                            .prop('selected', item.selected).html(item.title) );
                     }
                     $original.append($optgroup);
                 }
             } else {
                 // if there are no groups
                 for (let item of items) {
-                    $original.append( $('<option></option>').attr('value', item.value).prop('selected', item.selected).html(item.title) );
+                    $original.append( $('<option></option>')
+                        .attr('value', item.value).prop('selected', item.selected).html(item.title) );
                 }
             }
         }
@@ -355,11 +369,6 @@ class pfDropdown {
             }
             this._toggleDropdown();
             return false;
-        });
-        this.$original.on('change', (event, byWho) => {
-            byWho = byWho || '';
-            if (byWho === 'by-widget-changed') return false;
-            this.setValue($(event.currentTarget).val());
         });
         if (this.settings.autocomplete) {
             // proxy some events to original <select>
@@ -407,16 +416,6 @@ class pfDropdown {
             $listItems = this._renderItems(items);
         }
         $container.find('.pf-dropdown-list').html($listItems);
-        // set current item
-        if (this.settings.autocomplete !== true) {
-            let items = this._getSelectedItems();
-            if (items !== null) {
-                // TODO remove render
-                let $item = this._renderItem(item);
-                if ($item !== false) this._selectItem($item, items, false);
-
-            }
-        }
     }
 
 
@@ -467,47 +466,54 @@ class pfDropdown {
 
 
     /**
-     * @param {Object<jQueryElement>} $defaultTemplate
      * @param {Object} item Item {title: title, value: value, data: {}}
-     * @param {Object} options Plugin settings
+     * @param {bool} bindEvents
      * @private
      * @return {Object<jQueryElement>}
      */
-    _renderItem(item)
+    _renderItem(item, bindEvents = true)
     {
         item = item || false;
         if (!$.isPlainObject(item))  return false;
-        if ([typeof(item.id), typeof(item.value), typeof(item.title)].includes('undfined'))  return false;
-        let $itemOrig = $(this.itemTmpl).attr('data-item_value', item.value).html(item.title),
+        if ([typeof(item.index), typeof(item.value), typeof(item.title)].includes('undfined'))  return false;
+        let $itemOrig = $(this.itemTmpl).attr('data-item_value', item.value)
+                .attr('data-index', item.index).html(item.title),
             $item = this._executeCallback('renderItem', $itemOrig.clone(), item, this.$original, this.$container, this.settings);
         if (!($item instanceof $) || !$item.hasClass('pf-dropdown-item') || !$item.data('item_value')) {
             $item = $itemOrig;
         }
-        if (item.selected)  $item.addClass('selected');
-        $item.hover(
-            (event) => {
-                let $item = $(event.currentTarget),
-                    item = this._getItemsByValues($item.data('item_value'));
-                if (item !== null && item[1]) {
-                    this._executeCallback('onOverItem', $item, item[1]);
+        if (bindEvents) {
+            if (item.selected) $item.addClass('selected');
+            $item.hover(
+                (event) => {
+                    let $item = $(event.currentTarget),
+                        items = this._getItemsByValues($item.data('item_value'));
+                    if (items.length > 0) {
+                        this._executeCallback('onOverItem', $item, items[0]);
+                    }
+                },
+                (event) => {
+                    let $item = $(event.currentTarget),
+                        items = this._getItemsByValues($item.data('item_value'));
+                    if (items.length > 0) {
+                        this._executeCallback('onLeaveItem', $item, items[0]);
+                    }
                 }
-            },
-            (event) => {
+            );
+            $item.on('click', (event) => {
                 let $item = $(event.currentTarget),
-                    item = this._getItemsByValues($item.data('item_value'));
-                if (item !== null && item[1]) {
-                    this._executeCallback('onLeaveItem', $item, item[1]);
+                    items = this._getItemsByValues($item.data('item_value'));
+                if (items.length > 0) {
+                    if (this.isMultiple && items[0].selected) {
+                        this._unselectItem(items[0]);
+                    } else {
+                        this._selectItem(items[0]);
+                    }
                 }
-            }
-        );
-        $item.on('click', (event) => {
-            let item = this._getItemsByValues($(event.currentTarget).data('item_value'));
-            if (item !== null && item[1]) {
-                this._selectItem($(event.currentTarget), item[1], item[0]);
-            }
-            if (!this.settings.closeOnSelect)  return;
-            this._toggleDropdown();
-        });
+                if (!this.settings.closeOnSelect) return;
+                this._toggleDropdown();
+            });
+        }
         return $item;
     }
 
@@ -533,6 +539,41 @@ class pfDropdown {
     }
 
 
+    _renderChoice()
+    {
+        let selected = this._getSelectedItems(),
+            $frame = this.$container.find('.pf-decorated'),
+            $view;
+        if (this.settings.displaySelectionAs === 'html') {
+            this.$input.val('');
+            if (selected.length > 0) {
+                if (selected.length > 1) {
+                    $view = this._renderItem({index:'', value: '', title: selected.length + ' selected'}, false);
+                } else {
+                    $view = this._renderItem(selected[0], false);
+                }
+            } else {
+                $view = this._renderItem({index:'', value: '', title: ''}, false);
+            }
+            $view = this._executeCallback('renderChoice', $view, selected, this.$original, this.$container, this.settings);
+            $frame.html($view);
+        } else {
+            // text
+            $frame.html('');
+            if (selected.length > 0) {
+                if (selected.length > 1) {
+                    this.$input.val(selected.length + ' selected');
+                } else {
+                    this.$input.val(selected[0].title);
+                }
+            } else {
+                this.$input.val('');
+            }
+        }
+
+    }
+
+
     _toggleDropdown()
     {
         let $dropdown = this.$container.find('.pf-dropdown-frame');
@@ -549,29 +590,59 @@ class pfDropdown {
     }
 
 
-    _selectItem($item, item, fireEvent = true)
+    _selectItem(item = null)
     {
-
-        // TODO "Selected (4)"
-
-        let $input = this.$container.find('.pf-input'),
-            $frame = this.$container.find('.pf-decorated li'),
-            isUndefined = !$.isPlainObject(item);
-        item = isUndefined ? {title: '', value: '', group: '', data: {}} : item;
-        if (this.settings.displaySelectionAs === 'html') {
-            $input.val('');
-            $frame.html(isUndefined ? '' : $item.clone());
-        } else {
-            // text
-            $input.val(item.title);
-            $frame.html('');
-        }
+        let selectedValues = [],
+            value = "" + item.value;
         // update original <select>
-        this.$original.val(item.value);
-        if (fireEvent) {
-            this._executeCallback('onSelectItem', item);
-            this.$original.trigger('change');
+        if (this.isMultiple) {
+            selectedValues = $('#select-5').val();
+            selectedValues.push(value);
+            this.$original.val(selectedValues);
+        } else {
+            selectedValues.push(value);
+            this.$original.val(value);
         }
+        this._refreshSelecteditems(selectedValues);
+        this._executeCallback('onSelectItem', item);
+    }
+
+
+    _unselectItem(item = null)
+    {
+        let selectedValues = [],
+            value = "" + item.value;
+        // update original <select>
+        if (this.isMultiple) {
+            selectedValues = this.$original.val();
+            selectedValues = selectedValues.filter(v => v !== value);
+            this.$original.val(selectedValues);
+        } else {
+            this.$original.find('option:selected').prop('selected', false);
+        }
+        this._refreshSelecteditems(selectedValues);
+        this._executeCallback('onUnselectItem', item);
+    }
+
+
+    _refreshSelecteditems(selectedValues)
+    {
+        // update items data
+        $('.pf-dropdown-item', this.$container).removeClass('selected');
+        for (let k in this.items) {
+            this.items[k].selected = false;
+            if (selectedValues.length > 0) {
+                for (let v of selectedValues) {
+                    if (this.items[k].value == v) {
+                        this.items[k].selected = true;
+                        $('.pf-dropdown-item[data-index="' + this.items[k].index + '"]', this.$container)
+                            .addClass('selected');
+                    }
+                }
+            }
+        }
+        this._renderChoice();
+        this.$original.trigger('change');
     }
 
 
@@ -612,30 +683,34 @@ class pfDropdown {
     // Public methods
 
     /**
-     * @return {Object} {value: "123", title: "Numbers", group: "", data: {Object} }
+     * @return {Object|array} {value: "123", title: "Numbers", group: "", data: {Object} } or array of objects like previous
      */
     getValue()
     {
         let values = [],
             selectedItems = this._getSelectedItems();
-        for (let itm of selectedItems) {
-            values.push(itm[1]); // without keys, items only
+        for (let item of selectedItems) {
+            values.push(item); // without keys, items only
         }
-        return values;
+        return this.isMultiple ? values : values[0];
     }
 
 
     /**
-     * @param {string} value
+     * @param {string|array} value
      */
     setValue(value)
     {
-        let $item = null,
-            item = this._getItemsByValues(value);
-        if (item !== null) {
-            $item = this._renderItem(item);
+        let items = this._getItemsByValues(value);
+        // update original <select>
+        this.$original.val(value);
+        for (let k in this.items) {
+            this.items[k].selected = false;
+            for (let item2 of items) {
+                if (item2.index == this.items[k].index)  this.items[k].selected = true;
+            }
         }
-        this._selectItem($item, item, false);
+        this._renderChoice();
     }
 
 }

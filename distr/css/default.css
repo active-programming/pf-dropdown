@@ -41,8 +41,9 @@
       margin: 0;
       padding: 0; }
       .pf-dropdown .pf-input-frame .pf-decorated li {
+        display: block;
         margin: 0;
-        padding: 0; }
+        padding: 4px; }
   .pf-dropdown .pf-dropdown-frame {
     display: block;
     position: absolute;
@@ -63,6 +64,8 @@
         display: block;
         padding: 4px;
         border-bottom: 1px solid #ddd; }
+        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item.selected {
+          background-color: #76c7dd; }
       .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group {
         font-weight: bold; }
         .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-group-item {
