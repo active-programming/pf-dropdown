@@ -714,12 +714,7 @@ class pfDropdown {
         let items = this._getItemsByValues(value);
         // update original <select>
         this.$original.val(value);
-        for (let k in this.items) {
-            this.items[k].selected = false;
-            for (let item2 of items) {
-                if (item2.index == this.items[k].index)  this.items[k].selected = true;
-            }
-        }
+        this._refreshSelecteditems(value);
         this._renderChoice();
     }
 

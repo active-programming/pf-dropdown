@@ -130,4 +130,6 @@ $(function($) {
         {"title": "Value 163", "value": 163, "selected": true, "dataset": {}}
     ]);
 
+    $('#select-5').pfDropdown('setValue', [24,54,163]);
+
 });

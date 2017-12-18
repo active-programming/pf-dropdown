@@ -9643,6 +9643,8 @@ $(function ($) {
     });
 
     $('#select-5').pfDropdown('setNewItems', [{ "title": "Value 24", "value": 24, "dataset": {} }, { "title": "Value 54", "value": 54, "selected": true, "dataset": {} }, { "title": "Value 55", "value": 55, "dataset": {} }, { "title": "Value 163", "value": 163, "selected": true, "dataset": {} }]);
+
+    $('#select-5').pfDropdown('setValue', [24, 54, 163]);
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -9871,14 +9873,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           var g = !0,
               y = !1,
               m = void 0;try {
-            for (var b, _ = e[Symbol.iterator](); !(g = (b = _.next()).done); g = !0) {
-              var x = b.value;t.append($("<option></option>").attr("value", x.value).prop("selected", x.selected).html(x.title));
+            for (var _, b = e[Symbol.iterator](); !(g = (_ = b.next()).done); g = !0) {
+              var x = _.value;t.append($("<option></option>").attr("value", x.value).prop("selected", x.selected).html(x.title));
             }
           } catch (t) {
             y = !0, m = t;
           } finally {
             try {
-              !g && _.return && _.return();
+              !g && b.return && b.return();
             } finally {
               if (y) throw m;
             }
@@ -10031,23 +10033,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }return this.isMultiple ? t : t[0];
       } }, { key: "setValue", value: function value(t) {
-        var e = this._getItemsByValues(t);this.$original.val(t);for (var i in this.items) {
-          this.items[i].selected = !1;var n = !0,
-              r = !1,
-              a = void 0;try {
-            for (var l, o = e[Symbol.iterator](); !(n = (l = o.next()).done); n = !0) {
-              l.value.index == this.items[i].index && (this.items[i].selected = !0);
-            }
-          } catch (t) {
-            r = !0, a = t;
-          } finally {
-            try {
-              !n && o.return && o.return();
-            } finally {
-              if (r) throw a;
-            }
-          }
-        }this._renderChoice();
+        this._getItemsByValues(t);this.$original.val(t), this._refreshSelecteditems(t), this._renderChoice();
       } }, { key: "setNewItems", value: function value(t) {
         var e = this._executeCallback("newItemsFilter", t, this.settings);Array.isArray(e) || $.isPlainObject(e) || (e = t), this._loadItemsFromResponse(e), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete ? this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)) : this._refreshSelecteditems(this.$original.val());
       } }]), t;
