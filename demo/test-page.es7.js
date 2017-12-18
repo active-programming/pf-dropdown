@@ -105,6 +105,7 @@ $(function($) {
     $('#select-5').pfDropdown({
         useOriginalStyles: false,
         displaySelectionAs: 'html',
+        closeOnSelect: false,
         callbacks: {
             renderChoice($view, items, $original, $container, settings)
             {
@@ -122,5 +123,13 @@ $(function($) {
             }
         }
     });
+
+
+    $('#select-5').pfDropdown('setNewItems', [
+        {"title": "Value 24", "value": 24, "dataset": {}},
+        {"title": "Value 54", "value": 54, "selected": true, "dataset": {}},
+        {"title": "Value 55", "value": 55, "dataset": {}},
+        {"title": "Value 163", "value": 163, "selected": true, "dataset": {}}
+    ]);
 
 });

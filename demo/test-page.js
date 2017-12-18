@@ -9622,6 +9622,7 @@ $(function ($) {
     $('#select-5').pfDropdown({
         useOriginalStyles: false,
         displaySelectionAs: 'html',
+        closeOnSelect: false,
         callbacks: {
             renderChoice: function renderChoice($view, items, $original, $container, settings) {
                 $view.addClass('hey-you');
@@ -9636,6 +9637,8 @@ $(function ($) {
             }
         }
     });
+
+    $('#select-5').pfDropdown('setNewItems', [{ "title": "Value 24", "value": 24, "dataset": {} }, { "title": "Value 54", "value": 54, "selected": true, "dataset": {} }, { "title": "Value 55", "value": 55, "dataset": {} }, { "title": "Value 163", "value": 163, "selected": true, "dataset": {} }]);
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -9679,24 +9682,24 @@ module.exports = function (module) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 !function (t) {
-  function e(i) {
-    if (n[i]) return n[i].exports;var r = n[i] = { i: i, l: !1, exports: {} };return t[i].call(r.exports, r, r.exports, e), r.l = !0, r.exports;
-  }var n = {};e.m = t, e.c = n, e.d = function (t, n, i) {
-    e.o(t, n) || Object.defineProperty(t, n, { configurable: !1, enumerable: !0, get: i });
+  function e(n) {
+    if (i[n]) return i[n].exports;var r = i[n] = { i: n, l: !1, exports: {} };return t[n].call(r.exports, r, r.exports, e), r.l = !0, r.exports;
+  }var i = {};e.m = t, e.c = i, e.d = function (t, i, n) {
+    e.o(t, i) || Object.defineProperty(t, i, { configurable: !1, enumerable: !0, get: n });
   }, e.n = function (t) {
-    var n = t && t.__esModule ? function () {
+    var i = t && t.__esModule ? function () {
       return t.default;
     } : function () {
       return t;
-    };return e.d(n, "a", n), n;
+    };return e.d(i, "a", i), i;
   }, e.o = function (t, e) {
     return Object.prototype.hasOwnProperty.call(t, e);
   }, e.p = "", e(e.s = 0);
-}([function (t, e, n) {
-  n(1), t.exports = n(3);
-}, function (t, e, n) {
+}([function (t, e, i) {
+  i(1), t.exports = i(3);
+}, function (t, e, i) {
   "use strict";
-  function i(t, e) {
+  function n(t, e) {
     if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
   }var r = "function" == typeof Symbol && "symbol" == _typeof(Symbol.iterator) ? function (t) {
     return typeof t === "undefined" ? "undefined" : _typeof(t);
@@ -9705,26 +9708,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   },
       a = function () {
     function t(t, e) {
-      for (var n = 0; n < e.length; n++) {
-        var i = e[n];i.enumerable = i.enumerable || !1, i.configurable = !0, "value" in i && (i.writable = !0), Object.defineProperty(t, i.key, i);
+      for (var i = 0; i < e.length; i++) {
+        var n = e[i];n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n && (n.writable = !0), Object.defineProperty(t, n.key, n);
       }
-    }return function (e, n, i) {
-      return n && t(e.prototype, n), i && t(e, i), e;
+    }return function (e, i, n) {
+      return i && t(e.prototype, i), n && t(e, n), e;
     };
   }(),
-      l = n(2),
+      l = i(2),
       o = function (t) {
     return t && t.__esModule ? t : { default: t };
   }(l),
       s = function () {
     function t(e) {
-      var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};i(this, t), this.containerTmpl = '<div class="pf-input-frame">\n            <ul class="pf-decorated" style="display:none"><li></li></ul>\n            <input type="text" class="pf-input" value="" style="background-color: transparent"/>\n            <a href="#" class="pf-arrow"><i></i></a>\n        </div>\n        <div class="pf-dropdown-frame" style="display:none">\n            <ul class="pf-dropdown-list"></ul>\n        </div>', this.groupTmpl = '<li class="pf-dropdown-group" data-group_id="">\n                <span class="pf-group-item"></span>\n            <ul class="pf-dropdown-group-items"></ul>\n        </li>', this.itemTmpl = '<li class="pf-dropdown-item" data-item_value=""></li>', this.$original = $([]), this.$container = $([]), this.$input = $([]), this.$ajax = null, this.groups = [], this.items = [], this.isMultiple = !1, this.settings = { containerClass: "pf-dropdown", implementOriginalStyles: !0, displaySelectionAs: "text", autocomplete: !1, minLength: 2, closeOnSelect: !0, ajax: { loadOnInit: !1, url: "", type: "get", dataType: "json", valueKey: "value", titleKey: "title", dataKey: "dataset" }, plugins: [], callbacks: { onRendered: null, onClose: null, onOpen: null, onOverItem: null, onLeaveItem: null, onSelectItem: null, onUnselectItem: null, onInputKeyEvent: null, renderItem: null, renderGroup: null, renderChoice: null, ajaxDataBuilder: null, ajaxResponseFilter: null } }, this.$original = $(e);var r = $.extend({}, this.settings, n);r.ajax = $.extend({}, this.settings.ajax, n.ajax), r.callbacks = $.extend({}, this.settings.callbacks, n.callbacks), this.settings = r, this.isMultiple = !!this.$original.prop("multiple"), this.isMultiple && (this.settings.autocomplete = !1), this._loadOriginalOptions(), this._renderWidget(this.items, this.groups), this._renderChoice(), this._executeCallback("onRendered", this.$original, this.$container), "" !== $.trim(this.settings.ajax.url) && !0 === this.settings.ajax.loadOnInit && this._loadRemoteItems();
+      var i = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};n(this, t), this.containerTmpl = '<div class="pf-input-frame">\n            <ul class="pf-decorated" style="display:none"><li></li></ul>\n            <input type="text" class="pf-input" value="" style="background-color: transparent"/>\n            <a href="#" class="pf-arrow"><i></i></a>\n        </div>\n        <div class="pf-dropdown-frame" style="display:none">\n            <ul class="pf-dropdown-list"></ul>\n        </div>', this.groupTmpl = '<li class="pf-dropdown-group" data-group_id="">\n                <span class="pf-group-item"></span>\n            <ul class="pf-dropdown-group-items"></ul>\n        </li>', this.itemTmpl = '<li class="pf-dropdown-item" data-item_value=""></li>', this.$original = $([]), this.$container = $([]), this.$input = $([]), this.$ajax = null, this.groups = [], this.items = [], this.isMultiple = !1, this.settings = { containerClass: "pf-dropdown", implementOriginalStyles: !0, displaySelectionAs: "text", autocomplete: !1, minLength: 2, closeOnSelect: !0, ajax: { loadOnInit: !1, url: "", type: "get", dataType: "json", valueKey: "value", titleKey: "title", dataKey: "dataset" }, plugins: [], callbacks: { onRendered: null, onClose: null, onOpen: null, onOverItem: null, onLeaveItem: null, onSelectItem: null, onUnselectItem: null, onInputKeyEvent: null, renderItem: null, renderGroup: null, renderChoice: null, ajaxDataBuilder: null, ajaxResponseFilter: null, newItemsFilter: null } }, this.$original = $(e);var r = $.extend({}, this.settings, i);r.ajax = $.extend({}, this.settings.ajax, i.ajax), r.callbacks = $.extend({}, this.settings.callbacks, i.callbacks), this.settings = r, this.isMultiple = !!this.$original.prop("multiple"), this.isMultiple && (this.settings.autocomplete = !1), this._loadOriginalOptions(), this._renderWidget(this.items, this.groups), this._renderChoice(), this._executeCallback("onRendered", this.$original, this.$container), "" !== $.trim(this.settings.ajax.url) && !0 === this.settings.ajax.loadOnInit && this._loadRemoteItems();
     }return a(t, [{ key: "_loadOriginalOptions", value: function value() {
         var t = this,
             e = this.$original.find("optgroup"),
-            n = function n(e, _n) {
-          e.each(function (e, i) {
-            var r = $(i),
+            i = function i(e, _i) {
+          e.each(function (e, n) {
+            var r = $(n),
                 a = {},
                 l = r.data("set"),
                 o = r.attr("value") ? r.attr("value") : "",
@@ -9732,27 +9735,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               a = "string" == typeof l ? $.parseJSON(l) : l;
             } catch (t) {
               console.warn("data-set contains wrong value:", l);
-            }t.items.push({ index: t.items.length, group: _n, value: o, title: r.text() ? r.text() : "", data: a || {}, selected: s });
+            }t.items.push({ index: t.items.length, group: _i, value: o, title: r.text() ? r.text() : "", data: a || {}, selected: s });
           });
-        };e.length > 0 ? e.each(function (e, i) {
-          var r = t.groups.length + 1;t.groups.push({ id: r, label: $(i).attr("label") }), n($(i).find("option"), r);
-        }) : n(this.$original.find("option"), "");
+        };e.length > 0 ? e.each(function (e, n) {
+          var r = t.groups.length + 1;t.groups.push({ id: r, label: $(n).attr("label") }), i($(n).find("option"), r);
+        }) : i(this.$original.find("option"), "");
       } }, { key: "_loadRemoteItems", value: function value() {
         var t = this,
             e = this.settings.ajax,
-            n = {};!0 === this.settings.autocomplete && (n.term = this.$input.val()), null !== this.$ajax && 4 !== this.$ajax.readyState && this.$ajax.abort(), n = this._executeCallback("ajaxDataBuilder", n, this.$original, this.$container, this.settings), this.$ajax = $.ajax({ url: e.url, type: e.type, dataType: "json", data: n }).done(function (e) {
-          var n = t._executeCallback("ajaxResponseFilter", e, t.settings);Array.isArray(n) || $.isPlainObject(n) || (n = e), t._loadItemsFromResponse(n), t._renderList(t.$container, t.items, t.groups), !0 === t.settings.autocomplete ? t.$container.find(".pf-dropdown-item").length > 0 && (t.$container.find(".pf-dropdown-frame").css("display", ""), t._executeCallback("onOpen", t.$original, t.$container)) : t._renderChoice();
+            i = {};!0 === this.settings.autocomplete && (i.term = this.$input.val()), null !== this.$ajax && 4 !== this.$ajax.readyState && this.$ajax.abort(), i = this._executeCallback("ajaxDataBuilder", i, this.$original, this.$container, this.settings), this.$ajax = $.ajax({ url: e.url, type: e.type, dataType: "json", data: i }).done(function (e) {
+          var i = t._executeCallback("ajaxResponseFilter", e, t.settings);Array.isArray(i) || $.isPlainObject(i) || (i = e), t._loadItemsFromResponse(i), t._renderList(t.$container, t.items, t.groups), !0 === t.settings.autocomplete ? t.$container.find(".pf-dropdown-item").length > 0 && (t.$container.find(".pf-dropdown-frame").css("display", ""), t._executeCallback("onOpen", t.$original, t.$container)) : t._renderChoice();
         });
       } }, { key: "_loadItemsFromResponse", value: function value(t) {
-        var e = this;this.items = [], this.groups = [];var n = this.settings.ajax,
-            i = function i(t) {
-          var i = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";$.isPlainObject(t) ? t[n.dataKey] && t[n.valueKey] && t[n.titleKey] ? e.items.push({ index: e.items.length, group: i, value: t[n.valueKey], title: t[n.titleKey], data: t[n.dataKey], selected: void 0 !== r(t.selected) && t.selected }) : console.warn("Item doesn't contain needed keys: " + n.titleKey + ", " + n.valueKey + ", " + n.dataKey, t) : console.warn("Wrong item type", t);
+        var e = this;this.items = [], this.groups = [];var i = this.settings.ajax,
+            n = function n(t) {
+          var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";$.isPlainObject(t) ? t[i.dataKey] && t[i.valueKey] && t[i.titleKey] ? e.items.push({ index: e.items.length, group: n, value: t[i.valueKey], title: t[i.titleKey], data: t[i.dataKey], selected: void 0 !== r(t.selected) && t.selected }) : console.warn("Item doesn't contain needed keys: " + i.titleKey + ", " + i.valueKey + ", " + i.dataKey, t) : console.warn("Wrong item type", t);
         };if (Array.isArray(t)) {
           var a = !0,
               l = !1,
               o = void 0;try {
             for (var s, u = t[Symbol.iterator](); !(a = (s = u.next()).done); a = !0) {
-              var c = s.value;i(c);
+              var c = s.value;n(c);
             }
           } catch (t) {
             l = !0, o = t;
@@ -9763,13 +9766,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               if (l) throw o;
             }
           }
-        } else $.isPlainObject(t) && $.each(t, function (t, n) {
-          if (Array.isArray(n)) {
+        } else $.isPlainObject(t) && $.each(t, function (t, i) {
+          if (Array.isArray(i)) {
             var r = e.groups.length + 1;e.groups.push({ id: r, label: t });var a = !0,
                 l = !1,
                 o = void 0;try {
-              for (var s, u = n[Symbol.iterator](); !(a = (s = u.next()).done); a = !0) {
-                var c = s.value;i(c, r);
+              for (var s, u = i[Symbol.iterator](); !(a = (s = u.next()).done); a = !0) {
+                var c = s.value;n(c, r);
               }
             } catch (t) {
               l = !0, o = t;
@@ -9788,66 +9791,66 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var t = this.$original.val();return t = null === t ? "" : t, $.isArray(t) || (t = [t]), this._getItemsByValues(t);
       } }, { key: "_getItemsByValues", value: function value(t) {
         var e = [];if ($.isArray(t) || (t = [t]), this.items.length > 0) {
-          var n = !0,
-              i = !1,
+          var i = !0,
+              n = !1,
               r = void 0;try {
-            for (var a, l = t[Symbol.iterator](); !(n = (a = l.next()).done); n = !0) {
+            for (var a, l = t[Symbol.iterator](); !(i = (a = l.next()).done); i = !0) {
               var o = a.value,
                   s = !0,
                   u = !1,
                   c = void 0;try {
-                for (var d, p = this.items[Symbol.iterator](); !(s = (d = p.next()).done); s = !0) {
-                  var h = d.value;h.value == o && e.push(h);
+                for (var d, h = this.items[Symbol.iterator](); !(s = (d = h.next()).done); s = !0) {
+                  var p = d.value;p.value == o && e.push(p);
                 }
               } catch (t) {
                 u = !0, c = t;
               } finally {
                 try {
-                  !s && p.return && p.return();
+                  !s && h.return && h.return();
                 } finally {
                   if (u) throw c;
                 }
               }
             }
           } catch (t) {
-            i = !0, r = t;
+            n = !0, r = t;
           } finally {
             try {
-              !n && l.return && l.return();
+              !i && l.return && l.return();
             } finally {
-              if (i) throw r;
+              if (n) throw r;
             }
           }
         }return e;
       } }, { key: "_implementOriginalStyles", value: function value(t, e) {
-        var n = ["background", "backgroundColor", "border", "position", "top", "left", "right", "bottom", "color", "cursor", "font", "height", "lineHeight", "margin", "maxHeight", "maxWidth", "outline", "width", "wordSpacing", "wordWrap", "zoom"],
-            i = void 0 !== document.defaultView ? document.defaultView.getComputedStyle(t[0], null) : {};for (var r in i) {
-          if (n.includes(r)) {
-            var a = i[r];["height", "width"].includes(r) && "auto" === a && (a = t.css(r)), "position" === r && "static" === a && (a = "relative"), "border" === r ? "none" !== a && (e.find(".pf-input-frame").css(r, a).css("box-sizing", "border-box"), e.find(".pf-dropdown-frame").css(r, a).css("border-top", "none").css("box-sizing", "border-box")) : (e.css(r, a), ["width", "height"].includes(r) && e.find(".pf-input-frame").css(r, a), "color" === r && e.find(".pf-input").css(r, a));
+        var i = ["background", "backgroundColor", "border", "position", "top", "left", "right", "bottom", "color", "cursor", "font", "height", "lineHeight", "margin", "maxHeight", "maxWidth", "outline", "width", "wordSpacing", "wordWrap", "zoom"],
+            n = void 0 !== document.defaultView ? document.defaultView.getComputedStyle(t[0], null) : {};for (var r in n) {
+          if (i.includes(r)) {
+            var a = n[r];["height", "width"].includes(r) && "auto" === a && (a = t.css(r)), "position" === r && "static" === a && (a = "relative"), "border" === r ? "none" !== a && (e.find(".pf-input-frame").css(r, a).css("box-sizing", "border-box"), e.find(".pf-dropdown-frame").css(r, a).css("border-top", "none").css("box-sizing", "border-box")) : (e.css(r, a), ["width", "height"].includes(r) && e.find(".pf-input-frame").css(r, a), "color" === r && e.find(".pf-input").css(r, a));
           }
         }return e;
       } }, { key: "_replaceOriginalOptions", value: function value(t) {
         var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [],
-            n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : [];if (t.html(""), e.length > 0) if (!0 === this.settings.autocomplete && t.append($(n.length > 0 ? '<optgroup label="---"><option value="">---</option></optgroup>' : '<option value="">---</option>')), n.length > 0) {
-          var i = !0,
+            i = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : [];if (t.html(""), e.length > 0) if (!0 === this.settings.autocomplete && t.append($(i.length > 0 ? '<optgroup label="---"><option value="">---</option></optgroup>' : '<option value="">---</option>')), i.length > 0) {
+          var n = !0,
               r = !1,
               a = void 0;try {
-            for (var l, o = n[Symbol.iterator](); !(i = (l = o.next()).done); i = !0) {
+            for (var l, o = i[Symbol.iterator](); !(n = (l = o.next()).done); n = !0) {
               var s = l.value,
                   u = $("<optgroup></optgroup>").attr("label", s.label),
                   c = !0,
                   d = !1,
-                  p = void 0;try {
-                for (var h, f = e[Symbol.iterator](); !(c = (h = f.next()).done); c = !0) {
-                  var v = h.value;u.append($("<option></option>").attr("value", v.value).prop("selected", v.selected).html(v.title));
+                  h = void 0;try {
+                for (var p, f = e[Symbol.iterator](); !(c = (p = f.next()).done); c = !0) {
+                  var v = p.value;u.append($("<option></option>").attr("value", v.value).prop("selected", v.selected).html(v.title));
                 }
               } catch (t) {
-                d = !0, p = t;
+                d = !0, h = t;
               } finally {
                 try {
                   !c && f.return && f.return();
                 } finally {
-                  if (d) throw p;
+                  if (d) throw h;
                 }
               }t.append(u);
             }
@@ -9855,47 +9858,47 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             r = !0, a = t;
           } finally {
             try {
-              !i && o.return && o.return();
+              !n && o.return && o.return();
             } finally {
               if (r) throw a;
             }
           }
         } else {
-          var y = !0,
-              g = !1,
+          var g = !0,
+              y = !1,
               m = void 0;try {
-            for (var b, _ = e[Symbol.iterator](); !(y = (b = _.next()).done); y = !0) {
+            for (var b, _ = e[Symbol.iterator](); !(g = (b = _.next()).done); g = !0) {
               var x = b.value;t.append($("<option></option>").attr("value", x.value).prop("selected", x.selected).html(x.title));
             }
           } catch (t) {
-            g = !0, m = t;
+            y = !0, m = t;
           } finally {
             try {
-              !y && _.return && _.return();
+              !g && _.return && _.return();
             } finally {
-              if (g) throw m;
+              if (y) throw m;
             }
           }
         }
       } }, { key: "_renderWidget", value: function value(t, e) {
-        var n = this;return this.$container = this._renderContainer(this.$original, this.settings), this.$input = this.$container.find(".pf-input"), this._renderList(this.$container, t, e), this.$container.find(".pf-input-frame, .pf-input, .pf-arrow").on("click", function (t) {
-          if (t.preventDefault(), t.stopPropagation(), !0 === n.settings.autocomplete) {
-            var e = n.$input.val();n._deleteAllItems(), e.length >= n.settings.minLength && n._loadRemoteItems();
-          }return n._toggleDropdown(), !1;
+        var i = this;return this.$container = this._renderContainer(this.$original, this.settings), this.$input = this.$container.find(".pf-input"), this._renderList(this.$container, t, e), this.$container.find(".pf-input-frame, .pf-input, .pf-arrow").on("click", function (t) {
+          if (t.preventDefault(), t.stopPropagation(), !0 === i.settings.autocomplete) {
+            var e = i.$input.val();i._deleteAllItems(), e.length >= i.settings.minLength && i._loadRemoteItems();
+          }return i._toggleDropdown(), !1;
         }), this.settings.autocomplete && this.$input.on("keypress keyup keydown", function (t) {
-          var e = $(t.currentTarget).val();n.$original.trigger(t), n._executeCallback("onInputKeyEvent", t, $(t.currentTarget)), "keyup" === t.type && (n._deleteAllItems(), e.length >= n.settings.minLength && n._loadRemoteItems());
+          var e = $(t.currentTarget).val();i.$original.trigger(t), i._executeCallback("onInputKeyEvent", t, $(t.currentTarget)), "keyup" === t.type && (i._deleteAllItems(), e.length >= i.settings.minLength && i._loadRemoteItems());
         }), $("body").on("click pf-dropdown-click", function (t) {
-          "none" !== n.$container.find(".pf-dropdown-frame").css("display") && (n.$container.find(".pf-dropdown-frame").css("display", "none"), n._executeCallback("onClose", n.$original, n.$container));
+          "none" !== i.$container.find(".pf-dropdown-frame").css("display") && (i.$container.find(".pf-dropdown-frame").css("display", "none"), i._executeCallback("onClose", i.$original, i.$container));
         }), this.$container;
-      } }, { key: "_renderList", value: function value(t, e, n) {
-        var i = void 0;if (n.length > 0) {
-          i = $([]);var r = !0,
+      } }, { key: "_renderList", value: function value(t, e, i) {
+        var n = void 0;if (i.length > 0) {
+          n = $([]);var r = !0,
               a = !1,
               l = void 0;try {
-            for (var o, s = n[Symbol.iterator](); !(r = (o = s.next()).done); r = !0) {
+            for (var o, s = i[Symbol.iterator](); !(r = (o = s.next()).done); r = !0) {
               var u = o.value,
                   c = this._renderItems(e, u.id),
-                  d = this._renderGroup(u, c);d instanceof $ && (i = i.add(d));
+                  d = this._renderGroup(u, c);d instanceof $ && (n = n.add(d));
             }
           } catch (t) {
             a = !0, l = t;
@@ -9906,90 +9909,90 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               if (a) throw l;
             }
           }
-        } else i = this._renderItems(e);t.find(".pf-dropdown-list").html(i);
+        } else n = this._renderItems(e);t.find(".pf-dropdown-list").html(n);
       } }, { key: "_renderContainer", value: function value(t, e) {
-        t.css("display", "none");var n = $("<div>").addClass(e.containerClass).append($(this.containerTmpl));return !0 === e.useOriginalStyles && (n = this._implementOriginalStyles(t, n)), !0 == !e.autocomplete && n.find(".pf-input").prop("readonly", !0), "html" === e.displaySelectionAs && n.find(".pf-decorated").css("display", ""), n.insertBefore(this.$original), n.append(this.$original), n;
+        t.css("display", "none");var i = $("<div>").addClass(e.containerClass).append($(this.containerTmpl));return !0 === e.useOriginalStyles && (i = this._implementOriginalStyles(t, i)), !0 == !e.autocomplete && i.find(".pf-input").prop("readonly", !0), "html" === e.displaySelectionAs && i.find(".pf-decorated").css("display", ""), i.insertBefore(this.$original), i.append(this.$original), i;
       } }, { key: "_renderItems", value: function value(t) {
         var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : -1;if (t.length > 0) {
-          var n = $([]),
-              i = !0,
+          var i = $([]),
+              n = !0,
               r = !1,
               a = void 0;try {
-            for (var l, o = t[Symbol.iterator](); !(i = (l = o.next()).done); i = !0) {
+            for (var l, o = t[Symbol.iterator](); !(n = (l = o.next()).done); n = !0) {
               var s = l.value;if (e < 0 || e >= 0 && s.group == e) {
-                var u = this._renderItem(s);u instanceof $ && (n = n.add(u));
+                var u = this._renderItem(s);u instanceof $ && (i = i.add(u));
               }
             }
           } catch (t) {
             r = !0, a = t;
           } finally {
             try {
-              !i && o.return && o.return();
+              !n && o.return && o.return();
             } finally {
               if (r) throw a;
             }
-          }return n;
+          }return i;
         }return null;
       } }, { key: "_renderItem", value: function value(t) {
         var e = this,
-            n = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];if (t = t || !1, !$.isPlainObject(t)) return !1;if ([r(t.index), r(t.value), r(t.title)].includes("undfined")) return !1;var i = $(this.itemTmpl).attr("data-item_value", t.value).attr("data-index", t.index).html(t.title),
-            a = this._executeCallback("renderItem", i.clone(), t, this.$original, this.$container, this.settings);return a instanceof $ && a.hasClass("pf-dropdown-item") && a.data("item_value") || (a = i), n && (t.selected && a.addClass("selected"), a.hover(function (t) {
-          var n = $(t.currentTarget),
-              i = e._getItemsByValues(n.data("item_value"));i.length > 0 && e._executeCallback("onOverItem", n, i[0]);
+            i = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];if (t = t || !1, !$.isPlainObject(t)) return !1;if ([r(t.index), r(t.value), r(t.title)].includes("undfined")) return !1;var n = $(this.itemTmpl).attr("data-item_value", t.value).attr("data-index", t.index).html(t.title),
+            a = this._executeCallback("renderItem", n.clone(), t, this.$original, this.$container, this.settings);return a instanceof $ && a.hasClass("pf-dropdown-item") && a.data("item_value") || (a = n), i && (t.selected && a.addClass("selected"), a.hover(function (t) {
+          var i = $(t.currentTarget),
+              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onOverItem", i, n[0]);
         }, function (t) {
-          var n = $(t.currentTarget),
-              i = e._getItemsByValues(n.data("item_value"));i.length > 0 && e._executeCallback("onLeaveItem", n, i[0]);
+          var i = $(t.currentTarget),
+              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onLeaveItem", i, n[0]);
         }), a.on("click", function (t) {
-          var n = $(t.currentTarget),
-              i = e._getItemsByValues(n.data("item_value"));i.length > 0 && (e.isMultiple && i[0].selected ? e._unselectItem(i[0]) : e._selectItem(i[0])), e.settings.closeOnSelect && e._toggleDropdown();
+          t.preventDefault(), t.stopPropagation();var i = $(t.currentTarget),
+              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && (e.isMultiple && n[0].selected ? e._unselectItem(n[0]) : e._selectItem(n[0])), !0 === e.settings.closeOnSelect && e._toggleDropdown();
         })), a;
       } }, { key: "_renderGroup", value: function value(t, e) {
-        var n = $(this.groupTmpl).attr("data-group_id", t.id);n.find(".pf-group-item").html(t.label), e instanceof $ && n.find(".pf-dropdown-group-items").html(e);var i = this._executeCallback("renderGroup", n.clone(!0), t, e, this.$original, this.$container, this.settings);return i instanceof $ || (i = n), i;
+        var i = $(this.groupTmpl).attr("data-group_id", t.id);i.find(".pf-group-item").html(t.label), e instanceof $ && i.find(".pf-dropdown-group-items").html(e);var n = this._executeCallback("renderGroup", i.clone(!0), t, e, this.$original, this.$container, this.settings);return n instanceof $ || (n = i), n;
       } }, { key: "_renderChoice", value: function value() {
         var t = this._getSelectedItems(),
             e = this.$container.find(".pf-decorated"),
-            n = void 0;"html" === this.settings.displaySelectionAs ? (this.$input.val(""), n = t.length > 0 ? t.length > 1 ? this._renderItem({ index: "", value: "", title: t.length + " selected" }, !1) : this._renderItem(t[0], !1) : this._renderItem({ index: "", value: "", title: "" }, !1), n = this._executeCallback("renderChoice", n, t, this.$original, this.$container, this.settings), e.html(n)) : (e.html(""), t.length > 0 ? t.length > 1 ? this.$input.val(t.length + " selected") : this.$input.val(t[0].title) : this.$input.val(""));
+            i = void 0;"html" === this.settings.displaySelectionAs ? (this.$input.val(""), i = t.length > 0 ? t.length > 1 ? this._renderItem({ index: "", value: "", title: t.length + " selected" }, !1) : this._renderItem(t[0], !1) : this._renderItem({ index: "", value: "", title: "" }, !1), i = this._executeCallback("renderChoice", i, t, this.$original, this.$container, this.settings), e.html(i)) : (e.html(""), t.length > 0 ? t.length > 1 ? this.$input.val(t.length + " selected") : this.$input.val(t[0].title) : this.$input.val(""));
       } }, { key: "_toggleDropdown", value: function value() {
         var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : ($("body").trigger("pf-dropdown-click"), this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)));
       } }, { key: "_selectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
-            n = "" + t.value;this.isMultiple ? (e = $("#select-5").val(), e.push(n), this.$original.val(e)) : (e.push(n), this.$original.val(n)), this._refreshSelecteditems(e), this._executeCallback("onSelectItem", t);
+            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelecteditems(e), this._executeCallback("onSelectItem", t);
       } }, { key: "_unselectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
-            n = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
-          return t !== n;
+            i = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
+          return t !== i;
         }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelecteditems(e), this._executeCallback("onUnselectItem", t);
       } }, { key: "_refreshSelecteditems", value: function value(t) {
         $(".pf-dropdown-item", this.$container).removeClass("selected");for (var e in this.items) {
           if (this.items[e].selected = !1, t.length > 0) {
-            var n = !0,
-                i = !1,
+            var i = !0,
+                n = !1,
                 r = void 0;try {
-              for (var a, l = t[Symbol.iterator](); !(n = (a = l.next()).done); n = !0) {
+              for (var a, l = t[Symbol.iterator](); !(i = (a = l.next()).done); i = !0) {
                 var o = a.value;this.items[e].value == o && (this.items[e].selected = !0, $('.pf-dropdown-item[data-index="' + this.items[e].index + '"]', this.$container).addClass("selected"));
               }
             } catch (t) {
-              i = !0, r = t;
+              n = !0, r = t;
             } finally {
               try {
-                !n && l.return && l.return();
+                !i && l.return && l.return();
               } finally {
-                if (i) throw r;
+                if (n) throw r;
               }
             }
           }
         }this._renderChoice(), this.$original.trigger("change");
       } }, { key: "_executeCallback", value: function value(t) {
-        for (var e = "on" === t.substring(0, 2), n = arguments.length, i = Array(n > 1 ? n - 1 : 0), a = 1; a < n; a++) {
-          i[a - 1] = arguments[a];
-        }if ($.isFunction(this.settings.callbacks[t]) && (e ? this.settings.callbacks[t].apply(this, i) : i[0] = this.settings.callbacks[t].apply(this, i)), this.settings.plugins.length > 0) {
+        for (var e = "on" === t.substring(0, 2), i = arguments.length, n = Array(i > 1 ? i - 1 : 0), a = 1; a < i; a++) {
+          n[a - 1] = arguments[a];
+        }if ($.isFunction(this.settings.callbacks[t]) && (e ? this.settings.callbacks[t].apply(this, n) : n[0] = this.settings.callbacks[t].apply(this, n)), this.settings.plugins.length > 0) {
           var l = !0,
               o = !1,
               s = void 0;try {
             for (var u, c = this.settings.plugins[Symbol.iterator](); !(l = (u = c.next()).done); l = !0) {
-              var d = u.value;"object" === (void 0 === d ? "undefined" : r(d)) && $.isFunction(d[t]) && (e ? d[t].apply(d, i) : i[0] = d[t].apply(d, i));
+              var d = u.value;"object" === (void 0 === d ? "undefined" : r(d)) && $.isFunction(d[t]) && (e ? d[t].apply(d, n) : n[0] = d[t].apply(d, n));
             }
           } catch (t) {
             o = !0, s = t;
@@ -10000,58 +10003,60 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               if (o) throw s;
             }
           }
-        }return i[0];
+        }return n[0];
       } }, { key: "getValue", value: function value() {
         var t = [],
             e = this._getSelectedItems(),
-            n = !0,
-            i = !1,
+            i = !0,
+            n = !1,
             r = void 0;try {
-          for (var a, l = e[Symbol.iterator](); !(n = (a = l.next()).done); n = !0) {
+          for (var a, l = e[Symbol.iterator](); !(i = (a = l.next()).done); i = !0) {
             var o = a.value;t.push(o);
           }
         } catch (t) {
-          i = !0, r = t;
+          n = !0, r = t;
         } finally {
           try {
-            !n && l.return && l.return();
+            !i && l.return && l.return();
           } finally {
-            if (i) throw r;
+            if (n) throw r;
           }
         }return this.isMultiple ? t : t[0];
       } }, { key: "setValue", value: function value(t) {
-        var e = this._getItemsByValues(t);this.$original.val(t);for (var n in this.items) {
-          this.items[n].selected = !1;var i = !0,
+        var e = this._getItemsByValues(t);this.$original.val(t);for (var i in this.items) {
+          this.items[i].selected = !1;var n = !0,
               r = !1,
               a = void 0;try {
-            for (var l, o = e[Symbol.iterator](); !(i = (l = o.next()).done); i = !0) {
-              l.value.index == this.items[n].index && (this.items[n].selected = !0);
+            for (var l, o = e[Symbol.iterator](); !(n = (l = o.next()).done); n = !0) {
+              l.value.index == this.items[i].index && (this.items[i].selected = !0);
             }
           } catch (t) {
             r = !0, a = t;
           } finally {
             try {
-              !i && o.return && o.return();
+              !n && o.return && o.return();
             } finally {
               if (r) throw a;
             }
           }
         }this._renderChoice();
+      } }, { key: "setNewItems", value: function value(t) {
+        var e = this._executeCallback("newItemsFilter", t, this.settings);Array.isArray(e) || $.isPlainObject(e) || (e = t), this._loadItemsFromResponse(e), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete ? this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)) : this._refreshSelecteditems(this.$original.val());
       } }]), t;
   }();(0, o.default)("pfDropdown", s);
-}, function (t, e, n) {
+}, function (t, e, i) {
   "use strict";
-  function i(t, e) {
-    var n = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
-        i = "__" + t,
-        a = $.fn[t];$.fn[t] = function (n, a) {
+  function n(t, e) {
+    var i = arguments.length > 2 && void 0 !== arguments[2] && arguments[2],
+        n = "__" + t,
+        a = $.fn[t];$.fn[t] = function (i, a) {
       a = void 0 === a ? null : a;var l = null,
           o = !1;return this.each(function () {
         var s = $(this),
-            u = s.data(i),
-            c = $.extend({}, e.DEFAULTS, s.data(), "object" === (void 0 === n ? "undefined" : r(n)) && n);u || s.data(i, u = new e(this, c)), "string" == typeof n && ($.isFunction(u[n]) ? (l = u[n](a), o = !0) : console.log(t + " has no method or option like '" + n + "'"));
+            u = s.data(n),
+            c = $.extend({}, e.DEFAULTS, s.data(), "object" === (void 0 === i ? "undefined" : r(i)) && i);u || s.data(n, u = new e(this, c)), "string" == typeof i && ($.isFunction(u[i]) ? (l = u[i](a), o = !0) : console.log(t + " has no method or option like '" + i + "'"));
       }), o ? l : this;
-    }, n && ($[t] = function (e) {
+    }, i && ($[t] = function (e) {
       return $({})[t](e);
     }), $.fn[t].noConflict = function () {
       return $.fn[t] = a;
@@ -10060,7 +10065,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     return typeof t === "undefined" ? "undefined" : _typeof(t);
   } : function (t) {
     return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t === "undefined" ? "undefined" : _typeof(t);
-  };e.default = i;
+  };e.default = n;
 }, function (t, e) {}]);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 

@@ -58,25 +58,26 @@ export default class {
 
     }
 
-    onBeforeAddItem(item)
-    {
-        // return item or false;
-    }
-
-    onAddItem($item, item)
-    {
-
-    }
-
-    onBeforeDeleteItem($item, item)
-    {
-        // return true or false;
-    }
-
-    onDeleteItem(item)
-    {
-
-    }
+    // not sure about that
+    // onBeforeAddItem(item)
+    // {
+    //     // return item or false;
+    // }
+    //
+    // onAddItem($item, item)
+    // {
+    //
+    // }
+    //
+    // onBeforeDeleteItem($item, item)
+    // {
+    //     // return true or false;
+    // }
+    //
+    // onDeleteItem(item)
+    // {
+    //
+    // }
 
     // preProcessors methods
 
@@ -105,6 +106,15 @@ export default class {
     }
 
     ajaxResponseFilter(json, settings)
+    {
+        // @see select-3.json and select-4.json for example of response
+        // let response = [];
+        // for (let item of json)  response.push({title: item.header, value: item.id, dataset: {hey: 'you!'}});
+        // return response;
+    }
+
+    // using for setNewItems() method
+    newItemsFilter(json, settings)
     {
         // @see select-3.json and select-4.json for example of response
         // let response = [];

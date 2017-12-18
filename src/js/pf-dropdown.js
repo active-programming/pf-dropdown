@@ -65,7 +65,8 @@ class pfDropdown {
             renderGroup: null, // ($group, group, $items, $original, $container, settings) => { return $group; },
             renderChoice: null, // ($view, items, $original, $container, settings) => { return $view; },
             ajaxDataBuilder: null, // (currentData, $original, $container, settings) => { return currentData; },
-            ajaxResponseFilter: null //(json, settings) => { return json; },
+            ajaxResponseFilter: null, //(json, settings) => { return json; },
+            newItemsFilter: null //(json, settings) => { return json; },
         }
     };
 
@@ -501,6 +502,8 @@ class pfDropdown {
                 }
             );
             $item.on('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 let $item = $(event.currentTarget),
                     items = this._getItemsByValues($item.data('item_value'));
                 if (items.length > 0) {
@@ -510,8 +513,9 @@ class pfDropdown {
                         this._selectItem(items[0]);
                     }
                 }
-                if (!this.settings.closeOnSelect) return;
-                this._toggleDropdown();
+                if (this.settings.closeOnSelect === true) {
+                    this._toggleDropdown();
+                }
             });
         }
         return $item;
@@ -596,7 +600,7 @@ class pfDropdown {
             value = "" + item.value;
         // update original <select>
         if (this.isMultiple) {
-            selectedValues = $('#select-5').val();
+            selectedValues = this.$original.val() || [];
             selectedValues.push(value);
             this.$original.val(selectedValues);
         } else {
@@ -713,6 +717,29 @@ class pfDropdown {
         this._renderChoice();
     }
 
+
+    /**
+     * @param {Object} json
+     */
+    setNewItems(json)
+    {
+        let data = this._executeCallback('newItemsFilter', json, this.settings);
+        if (!Array.isArray(data) && !$.isPlainObject(data)) {
+            data = json;
+        }
+        this._loadItemsFromResponse(data);
+        // render new items list
+        this._renderList(this.$container, this.items, this.groups);
+        // open loaded items for autocomplete or display current choise
+        if (this.settings.autocomplete === true) {
+            if (this.$container.find('.pf-dropdown-item').length > 0) {
+                this.$container.find('.pf-dropdown-frame').css('display', '');
+                this._executeCallback('onOpen', this.$original, this.$container);
+            }
+        } else {
+            this._refreshSelecteditems( this.$original.val() );
+        }
+    }
 }
 
 
