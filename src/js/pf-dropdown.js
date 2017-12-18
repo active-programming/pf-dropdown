@@ -372,6 +372,8 @@ class pfDropdown {
             return false;
         });
         if (this.settings.autocomplete) {
+            // I don't think that we really need array for this case
+            this.$container.find('.pf-arrow').css('display', 'none');
             // proxy some events to original <select>
             this.$input.on('keypress keyup keydown', (event) => {
                 let term = $(event.currentTarget).val();
