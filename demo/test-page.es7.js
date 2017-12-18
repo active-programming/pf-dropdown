@@ -11,6 +11,10 @@ $(function($) {
         containerClass: 'pf-dropdown',
         useOriginalStyles: true,
         callbacks: {
+            renderChoice: ($input, items, $original, $container, settings) => {
+                $input.val( $input.val() + ' (HAHA, find me!)' );
+                return $input;
+            },
             onRendered: function ($original, $container) {
                 console.log('#select-1 RENDERED!' /*, $container[0], $original[0]*/);
             },
@@ -75,11 +79,10 @@ $(function($) {
             url: 'http://localhost:3210/get-items'
         },
         callbacks: {
-            ajaxDataBuilder(currentData, $original, $container, settings) {
+            ajaxDataBuilder: (currentData, $original, $container, settings) => {
                 return $.extend(currentData, {myParam: 'my value'});
             },
-            ajaxResponseFilter(json, settings)
-            {
+            ajaxResponseFilter: (json, settings) => {
                 let response = [];
                 for (let item of json)  response.push({
                     title: item.country_name,
@@ -88,13 +91,11 @@ $(function($) {
                 });
                 return response;
             },
-            onSelectItem(item)
-            {
+            onSelectItem: (item) => {
                 console.log('onSelectItem', item);
                 console.log('real selected', $('#select-4').pfDropdown('getValue'));
             },
-            onUnselectItem(item)
-            {
+            onUnselectItem: (item) => {
                 console.log('onUnselectItem', item);
             }
         }
@@ -107,18 +108,15 @@ $(function($) {
         displaySelectionAs: 'html',
         closeOnSelect: false,
         callbacks: {
-            renderChoice($view, items, $original, $container, settings)
-            {
+            renderChoice: ($view, items, $original, $container, settings) => {
                 $view.addClass('hey-you');
                 return $view;
             },
-            onSelectItem(item)
-            {
+            onSelectItem: (item) => {
                 console.log('onSelectItem', item);
                 console.log('real selected', $('#select-5').pfDropdown('getValue'));
             },
-            onUnselectItem(item)
-            {
+            onUnselectItem: (item) => {
                 console.log('onUnselectItem', item);
             }
         }

@@ -561,8 +561,8 @@ class pfDropdown {
             } else {
                 $view = this._renderItem({index:'', value: '', title: ''}, false);
             }
-            $view = this._executeCallback('renderChoice', $view, selected, this.$original, this.$container, this.settings);
-            $frame.html($view);
+            let $customView = this._executeCallback('renderChoice', $view, selected, this.$original, this.$container, this.settings);
+            $frame.html($customView ? $customView : $view);
         } else {
             // text
             $frame.html('');
@@ -573,6 +573,11 @@ class pfDropdown {
                 } else {
                     this.$input.val(selected[0].title);
                 }
+            }
+            let $customInput = this._executeCallback('renderChoice', this.$input.clone(true), selected, this.$original, this.$container, this.settings);
+            if ($customInput) {
+                this.$input.replaceWith($customInput);
+                this.$input = $customInput;
             }
         }
 
