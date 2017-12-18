@@ -564,14 +564,13 @@ class pfDropdown {
         } else {
             // text
             $frame.html('');
+            this.$input.val('');
             if (selected.length > 0) {
                 if (selected.length > 1) {
                     this.$input.val(selected.length + ' selected');
                 } else {
                     this.$input.val(selected[0].title);
                 }
-            } else {
-                this.$input.val('');
             }
         }
 
