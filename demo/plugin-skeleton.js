@@ -48,12 +48,12 @@ export default class {
 
     }
 
-    onSelectItem(item)
+    onSelectItem(item, $original, $container)
     {
 
     }
 
-    onUnselectItem(item)
+    onUnselectItem(item, $original, $container)
     {
 
     }

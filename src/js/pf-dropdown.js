@@ -53,8 +53,8 @@ class pfDropdown {
             onOpen: null, // ($original, $container) => { },
             onOverItem: null, // ($item, item) => { },
             onLeaveItem: null, // ($item, item) => { },
-            onSelectItem: null, // (item) => { },
-            onUnselectItem: null, // (item) => { },
+            onSelectItem: null, // (item, $original, $container) => { },
+            onUnselectItem: null, // (item, $original, $container) => { },
             // onBeforeAddItem: null, // (item) => { return item or false; },
             // onAddItem: null, // ($item, item) => { },
             // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
@@ -607,7 +607,7 @@ class pfDropdown {
             this.$original.val(value);
         }
         this._refreshSelecteditems(selectedValues);
-        this._executeCallback('onSelectItem', item);
+        this._executeCallback('onSelectItem', item, this.$original, this.$container);
     }
 
 
@@ -624,7 +624,7 @@ class pfDropdown {
             this.$original.find('option:selected').prop('selected', false);
         }
         this._refreshSelecteditems(selectedValues);
-        this._executeCallback('onUnselectItem', item);
+        this._executeCallback('onUnselectItem', item, this.$original, this.$container);
     }
 
 

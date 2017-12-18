@@ -9951,19 +9951,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_renderChoice", value: function value() {
         var t = this._getSelectedItems(),
             e = this.$container.find(".pf-decorated"),
-            i = void 0;"html" === this.settings.displaySelectionAs ? (this.$input.val(""), i = t.length > 0 ? t.length > 1 ? this._renderItem({ index: "", value: "", title: t.length + " selected" }, !1) : this._renderItem(t[0], !1) : this._renderItem({ index: "", value: "", title: "" }, !1), i = this._executeCallback("renderChoice", i, t, this.$original, this.$container, this.settings), e.html(i)) : (e.html(""), t.length > 0 ? t.length > 1 ? this.$input.val(t.length + " selected") : this.$input.val(t[0].title) : this.$input.val(""));
+            i = void 0;"html" === this.settings.displaySelectionAs ? (this.$input.val(""), i = t.length > 0 ? t.length > 1 ? this._renderItem({ index: "", value: "", title: t.length + " selected" }, !1) : this._renderItem(t[0], !1) : this._renderItem({ index: "", value: "", title: "" }, !1), i = this._executeCallback("renderChoice", i, t, this.$original, this.$container, this.settings), e.html(i)) : (e.html(""), this.$input.val(""), t.length > 0 && (t.length > 1 ? this.$input.val(t.length + " selected") : this.$input.val(t[0].title)));
       } }, { key: "_toggleDropdown", value: function value() {
         var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : ($("body").trigger("pf-dropdown-click"), this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)));
       } }, { key: "_selectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
-            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelecteditems(e), this._executeCallback("onSelectItem", t);
+            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelecteditems(e), this._executeCallback("onSelectItem", t, this.$original, this.$container);
       } }, { key: "_unselectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
             i = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
           return t !== i;
-        }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelecteditems(e), this._executeCallback("onUnselectItem", t);
+        }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelecteditems(e), this._executeCallback("onUnselectItem", t, this.$original, this.$container);
       } }, { key: "_refreshSelecteditems", value: function value(t) {
         $(".pf-dropdown-item", this.$container).removeClass("selected");for (var e in this.items) {
           if (this.items[e].selected = !1, t.length > 0) {
