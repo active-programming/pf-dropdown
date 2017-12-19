@@ -124,6 +124,7 @@ $(function($) {
 
 
     $('#select-5').pfDropdown('setNewItems', [
+        {"title": "Min", "value": "", "selected": false},
         {"title": "Value 24", "value": 24},
         {"title": "Value 54", "value": 54, "selected": true, "dataset": {}},
         {"title": "Value 55", "value": 55},

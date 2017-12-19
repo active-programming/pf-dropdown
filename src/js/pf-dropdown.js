@@ -183,7 +183,7 @@ class pfDropdown {
         let keys = this.settings.ajax,
             addItemFn = (item, groupId = '') => {
                 if ($.isPlainObject(item)) {
-                    if (item[keys.titleKey] && item[keys.valueKey]) {
+                    if (typeof(item[keys.titleKey]) !== 'undefined' && typeof(item[keys.valueKey]) !== 'undefined') {
                         this.items.push({
                             index: this.items.length,
                             group: groupId,
