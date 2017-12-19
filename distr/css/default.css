@@ -66,6 +66,8 @@
         border-bottom: 1px solid #ddd; }
         .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item.selected {
           background-color: #76c7dd; }
+        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item .pf-hl {
+          font-weight: bold; }
       .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group {
         font-weight: bold; }
         .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-group-item {

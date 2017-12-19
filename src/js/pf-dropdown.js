@@ -485,6 +485,9 @@ class pfDropdown {
         if (!($item instanceof $) || !$item.hasClass('pf-dropdown-item') || !$item.data('item_value')) {
             $item = $itemOrig;
         }
+        if (this.settings.autocomplete) {
+            $item = this._hightlight($item, this.$input.val());
+        }
         if (bindEvents) {
             if (item.selected) $item.addClass('selected');
             $item.hover(
@@ -580,7 +583,26 @@ class pfDropdown {
                 this.$input = $customInput;
             }
         }
+    }
 
+
+    /**
+     * @param {Object} $item
+     * @param {string} substring
+     * @private
+     */
+    _hightlight($item, substring)
+    {
+        let reg = new RegExp('(' + substring + ')', 'ig');
+        $item.find('*').addBack().contents().filter(function () {
+            return this.nodeType === 3 && $(this).closest('.pf-hl').length === 0;
+        }).each(function () {
+            let output = this.nodeValue.replace(reg, "<span class=\"pf-hl\">$1</span>");
+            if (output !== this.nodeValue) {
+                $(this).wrap('<p></p>').parent().html(output).contents().unwrap();
+            }
+        });
+        return $item;
     }
 
 
@@ -613,7 +635,7 @@ class pfDropdown {
             selectedValues.push(value);
             this.$original.val(value);
         }
-        this._refreshSelecteditems(selectedValues);
+        this._refreshSelectedItems(selectedValues);
         this._executeCallback('onSelectItem', item, this.$original, this.$container);
     }
 
@@ -630,12 +652,12 @@ class pfDropdown {
         } else {
             this.$original.find('option:selected').prop('selected', false);
         }
-        this._refreshSelecteditems(selectedValues);
+        this._refreshSelectedItems(selectedValues);
         this._executeCallback('onUnselectItem', item, this.$original, this.$container);
     }
 
 
-    _refreshSelecteditems(selectedValues)
+    _refreshSelectedItems(selectedValues)
     {
         // update items data
         $('.pf-dropdown-item', this.$container).removeClass('selected');
@@ -714,7 +736,7 @@ class pfDropdown {
         let items = this._getItemsByValues(value);
         // update original <select>
         this.$original.val(value);
-        this._refreshSelecteditems(value);
+        this._refreshSelectedItems(value);
         this._renderChoice();
     }
 
@@ -738,7 +760,7 @@ class pfDropdown {
                 this._executeCallback('onOpen', this.$original, this.$container);
             }
         } else {
-            this._refreshSelecteditems( this.$original.val() );
+            this._refreshSelectedItems( this.$original.val() );
         }
     }
 }

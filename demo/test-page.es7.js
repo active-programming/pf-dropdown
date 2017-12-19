@@ -4,7 +4,7 @@ import PluginSelect1 from './plugin-select-1';
 import PluginSelect3 from './plugin-select-3';
 require('!style-loader!css-loader!./../distr/css/default.css');
 
-$(function($) {
+jQuery(function($) {
 
     let $select1 = $('#select-1');
     $select1.pfDropdown({

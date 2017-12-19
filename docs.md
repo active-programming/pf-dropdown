@@ -1,14 +1,11 @@
 PF Dropdown
 ===========
 
+This is Dropdown, so there is no "tags" feature or something else. The "autocomplete" just is related ability of Dropdown component.
 
-DRAFT
------
+**Note:** You need to have jQuery imported as global object!
 
-
-You need to have jQuery imported as global object!
-
-webpack.config.js
+*webpack.config.js*
 ```
     ...
     plugins: [
@@ -19,6 +16,19 @@ webpack.config.js
     ]
     ...
 ```
+
+See Demo page from ./demo folder.
+
+How to use?
+-----------
+
+TODO how to use
+
+Sub Pluguns
+-----------
+
+todo plugins description
+
 
 #### Off Topic
 

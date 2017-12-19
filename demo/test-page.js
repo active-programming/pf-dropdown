@@ -9490,7 +9490,7 @@ module.exports = __webpack_require__(12);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+/* WEBPACK VAR INJECTION */(function(jQuery) {
 
 __webpack_require__(0);
 
@@ -9508,7 +9508,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 __webpack_require__(7);
 
-$(function ($) {
+jQuery(function ($) {
 
     var $select1 = $('#select-1');
     $select1.pfDropdown({
@@ -9942,7 +9942,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_renderItem", value: function value(t) {
         var e = this,
             i = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];if (t = t || !1, !$.isPlainObject(t)) return !1;if ([r(t.index), r(t.value), r(t.title)].includes("undfined")) return !1;var n = $(this.itemTmpl).attr("data-item_value", t.value).attr("data-index", t.index).html(t.title),
-            a = this._executeCallback("renderItem", n.clone(), t, this.$original, this.$container, this.settings);return a instanceof $ && a.hasClass("pf-dropdown-item") && a.data("item_value") || (a = n), i && (t.selected && a.addClass("selected"), a.hover(function (t) {
+            a = this._executeCallback("renderItem", n.clone(), t, this.$original, this.$container, this.settings);return a instanceof $ && a.hasClass("pf-dropdown-item") && a.data("item_value") || (a = n), this.settings.autocomplete && (a = this._hightlight(a, this.$input.val())), i && (t.selected && a.addClass("selected"), a.hover(function (t) {
           var i = $(t.currentTarget),
               n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onOverItem", i, n[0]);
         }, function (t) {
@@ -9962,19 +9962,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else {
           e.html(""), this.$input.val(""), t.length > 0 && (t.length > 1 ? this.$input.val(t.length + " selected") : this.$input.val(t[0].title));var r = this._executeCallback("renderChoice", this.$input.clone(!0), t, this.$original, this.$container, this.settings);r && (this.$input.replaceWith(r), this.$input = r);
         }
+      } }, { key: "_hightlight", value: function value(t, e) {
+        var i = new RegExp("(" + e + ")", "ig");return t.find("*").addBack().contents().filter(function () {
+          return 3 === this.nodeType && 0 === $(this).closest(".pf-hl").length;
+        }).each(function () {
+          var t = this.nodeValue.replace(i, '<span class="pf-hl">$1</span>');t !== this.nodeValue && $(this).wrap("<p></p>").parent().html(t).contents().unwrap();
+        }), t;
       } }, { key: "_toggleDropdown", value: function value() {
         var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : ($("body").trigger("pf-dropdown-click"), this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)));
       } }, { key: "_selectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
-            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelecteditems(e), this._executeCallback("onSelectItem", t, this.$original, this.$container);
+            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelectedItems(e), this._executeCallback("onSelectItem", t, this.$original, this.$container);
       } }, { key: "_unselectItem", value: function value() {
         var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
             e = [],
             i = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
           return t !== i;
-        }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelecteditems(e), this._executeCallback("onUnselectItem", t, this.$original, this.$container);
-      } }, { key: "_refreshSelecteditems", value: function value(t) {
+        }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelectedItems(e), this._executeCallback("onUnselectItem", t, this.$original, this.$container);
+      } }, { key: "_refreshSelectedItems", value: function value(t) {
         $(".pf-dropdown-item", this.$container).removeClass("selected");for (var e in this.items) {
           if (this.items[e].selected = !1, t.length > 0) {
             var i = !0,
@@ -10033,9 +10039,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }return this.isMultiple ? t : t[0];
       } }, { key: "setValue", value: function value(t) {
-        this._getItemsByValues(t);this.$original.val(t), this._refreshSelecteditems(t), this._renderChoice();
+        this._getItemsByValues(t);this.$original.val(t), this._refreshSelectedItems(t), this._renderChoice();
       } }, { key: "setNewItems", value: function value(t) {
-        var e = this._executeCallback("newItemsFilter", t, this.settings);Array.isArray(e) || $.isPlainObject(e) || (e = t), this._loadItemsFromResponse(e), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete ? this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)) : this._refreshSelecteditems(this.$original.val());
+        var e = this._executeCallback("newItemsFilter", t, this.settings);Array.isArray(e) || $.isPlainObject(e) || (e = t), this._loadItemsFromResponse(e), this._renderList(this.$container, this.items, this.groups), !0 === this.settings.autocomplete ? this.$container.find(".pf-dropdown-item").length > 0 && (this.$container.find(".pf-dropdown-frame").css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)) : this._refreshSelectedItems(this.$original.val());
       } }]), t;
   }();(0, o.default)("pfDropdown", s);
 }, function (t, e, i) {
@@ -10262,7 +10268,7 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, "/**\n * PF Dropdown\n * @url https://github.com/active-programming/pf-dropdown\n */\n.pf-dropdown {\n  display: inline-block;\n  position: relative;\n  font-size: 14px;\n  height: 22px; }\n  .pf-dropdown .pf-input-frame {\n    position: relative;\n    border: 1px solid gray;\n    width: 100%;\n    overflow: hidden; }\n    .pf-dropdown .pf-input-frame .pf-input {\n      outline: none;\n      border: 0;\n      height: 22px;\n      width: 100%; }\n    .pf-dropdown .pf-input-frame .pf-arrow {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 24px;\n      min-height: 100%; }\n      .pf-dropdown .pf-input-frame .pf-arrow i {\n        display: inline-block;\n        position: absolute;\n        top: 9px;\n        right: 6px;\n        width: 0;\n        height: 0;\n        border-left: 5px solid transparent;\n        border-right: 5px solid transparent;\n        border-top: 5px solid #333; }\n    .pf-dropdown .pf-input-frame .pf-decorated {\n      position: absolute;\n      width: 100%;\n      min-height: 100%;\n      list-style: none;\n      margin: 0;\n      padding: 0; }\n      .pf-dropdown .pf-input-frame .pf-decorated li {\n        display: block;\n        margin: 0;\n        padding: 4px; }\n  .pf-dropdown .pf-dropdown-frame {\n    display: block;\n    position: absolute;\n    z-index: 10000;\n    background: #fff;\n    border: 1px solid gray;\n    border-top: none;\n    width: 100%;\n    max-height: 120px;\n    overflow-x: hidden;\n    overflow-y: auto; }\n    .pf-dropdown .pf-dropdown-frame .pf-dropdown-list {\n      list-style: none;\n      margin: 0;\n      padding: 0;\n      width: 100%; }\n      .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item {\n        display: block;\n        padding: 4px;\n        border-bottom: 1px solid #ddd; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item.selected {\n          background-color: #76c7dd; }\n      .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group {\n        font-weight: bold; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-group-item {\n          display: block;\n          background-color: #ddd;\n          padding: 2px; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-dropdown-group-items {\n          list-style: none;\n          margin: 0;\n          padding: 0;\n          font-weight: normal; }\n", ""]);
+exports.push([module.i, "/**\n * PF Dropdown\n * @url https://github.com/active-programming/pf-dropdown\n */\n.pf-dropdown {\n  display: inline-block;\n  position: relative;\n  font-size: 14px;\n  height: 22px; }\n  .pf-dropdown .pf-input-frame {\n    position: relative;\n    border: 1px solid gray;\n    width: 100%;\n    overflow: hidden; }\n    .pf-dropdown .pf-input-frame .pf-input {\n      outline: none;\n      border: 0;\n      height: 22px;\n      width: 100%; }\n    .pf-dropdown .pf-input-frame .pf-arrow {\n      position: absolute;\n      top: 0;\n      right: 0;\n      width: 24px;\n      min-height: 100%; }\n      .pf-dropdown .pf-input-frame .pf-arrow i {\n        display: inline-block;\n        position: absolute;\n        top: 9px;\n        right: 6px;\n        width: 0;\n        height: 0;\n        border-left: 5px solid transparent;\n        border-right: 5px solid transparent;\n        border-top: 5px solid #333; }\n    .pf-dropdown .pf-input-frame .pf-decorated {\n      position: absolute;\n      width: 100%;\n      min-height: 100%;\n      list-style: none;\n      margin: 0;\n      padding: 0; }\n      .pf-dropdown .pf-input-frame .pf-decorated li {\n        display: block;\n        margin: 0;\n        padding: 4px; }\n  .pf-dropdown .pf-dropdown-frame {\n    display: block;\n    position: absolute;\n    z-index: 10000;\n    background: #fff;\n    border: 1px solid gray;\n    border-top: none;\n    width: 100%;\n    max-height: 120px;\n    overflow-x: hidden;\n    overflow-y: auto; }\n    .pf-dropdown .pf-dropdown-frame .pf-dropdown-list {\n      list-style: none;\n      margin: 0;\n      padding: 0;\n      width: 100%; }\n      .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item {\n        display: block;\n        padding: 4px;\n        border-bottom: 1px solid #ddd; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item.selected {\n          background-color: #76c7dd; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-item .pf-hl {\n          font-weight: bold; }\n      .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group {\n        font-weight: bold; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-group-item {\n          display: block;\n          background-color: #ddd;\n          padding: 2px; }\n        .pf-dropdown .pf-dropdown-frame .pf-dropdown-list .pf-dropdown-group .pf-dropdown-group-items {\n          list-style: none;\n          margin: 0;\n          padding: 0;\n          font-weight: normal; }\n", ""]);
 
 // exports
 

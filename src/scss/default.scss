@@ -80,6 +80,9 @@ $pf-height: 22px;
         &.selected {
           background-color: #76c7dd;
         }
+        .pf-hl {
+          font-weight: bold;
+        }
       }
       .pf-dropdown-group {
         font-weight: bold;

@@ -41,7 +41,8 @@ module.exports = function(env) {
             plugins: [
                 new webpack.ProvidePlugin({
                     $: 'jquery',
-                    jQuery: 'jquery'
+                    jQuery: 'jquery',
+                    'window.jQuery': 'jquery'
                 }),
                 new ExtractTextPlugin({
                     filename: './demo/test-page.css',
