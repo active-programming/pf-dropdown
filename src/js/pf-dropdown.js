@@ -183,17 +183,17 @@ class pfDropdown {
         let keys = this.settings.ajax,
             addItemFn = (item, groupId = '') => {
                 if ($.isPlainObject(item)) {
-                    if (item[keys.dataKey] && item[keys.valueKey] && item[keys.titleKey]) {
+                    if (item[keys.titleKey] && item[keys.valueKey]) {
                         this.items.push({
                             index: this.items.length,
                             group: groupId,
                             value: item[keys.valueKey],
                             title: item[keys.titleKey],
-                            data: item[keys.dataKey],
+                            data: ((typeof(item[keys.dataKey]) !== 'undefined') ? item[keys.dataKey] : {}),
                             selected: (typeof(item['selected']) !== undefined) ? item['selected'] : false
                         });
                     } else {
-                        console.warn('Item doesn\'t contain needed keys: ' + keys.titleKey + ', ' + keys.valueKey + ', ' + keys.dataKey, item);
+                        console.warn('Item doesn\'t contain needed keys: ' + keys.titleKey + ', ' + keys.valueKey, item);
                     }
                 } else {
                     console.warn('Wrong item type', item);

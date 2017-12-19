@@ -9642,7 +9642,7 @@ $(function ($) {
         }
     });
 
-    $('#select-5').pfDropdown('setNewItems', [{ "title": "Value 24", "value": 24, "dataset": {} }, { "title": "Value 54", "value": 54, "selected": true, "dataset": {} }, { "title": "Value 55", "value": 55, "dataset": {} }, { "title": "Value 163", "value": 163, "selected": true, "dataset": {} }]);
+    $('#select-5').pfDropdown('setNewItems', [{ "title": "Value 24", "value": 24 }, { "title": "Value 54", "value": 54, "selected": true, "dataset": {} }, { "title": "Value 55", "value": 55 }, { "title": "Value 163", "value": 163, "selected": true, "dataset": {} }]);
 
     $('#select-5').pfDropdown('setValue', [24, 54, 163]);
 });
@@ -9755,7 +9755,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_loadItemsFromResponse", value: function value(t) {
         var e = this;this.items = [], this.groups = [];var i = this.settings.ajax,
             n = function n(t) {
-          var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";$.isPlainObject(t) ? t[i.dataKey] && t[i.valueKey] && t[i.titleKey] ? e.items.push({ index: e.items.length, group: n, value: t[i.valueKey], title: t[i.titleKey], data: t[i.dataKey], selected: void 0 !== r(t.selected) && t.selected }) : console.warn("Item doesn't contain needed keys: " + i.titleKey + ", " + i.valueKey + ", " + i.dataKey, t) : console.warn("Wrong item type", t);
+          var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";$.isPlainObject(t) ? t[i.titleKey] && t[i.valueKey] ? e.items.push({ index: e.items.length, group: n, value: t[i.valueKey], title: t[i.titleKey], data: void 0 !== t[i.dataKey] ? t[i.dataKey] : {}, selected: void 0 !== r(t.selected) && t.selected }) : console.warn("Item doesn't contain needed keys: " + i.titleKey + ", " + i.valueKey, t) : console.warn("Wrong item type", t);
         };if (Array.isArray(t)) {
           var a = !0,
               l = !1,
