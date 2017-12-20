@@ -53,8 +53,8 @@ class pfDropdown {
             onOpen: null, // ($original, $container) => { },
             onOverItem: null, // ($item, item, $original, $container) => { },
             onLeaveItem: null, // ($item, item, $original, $container) => { },
-            onSelectItem: null, // (item, $original, $container) => { },
-            onUnselectItem: null, // (item, $original, $container) => { },
+            onSelectItem: null, // (item, $original, $container) => { return true|false },
+            onUnselectItem: null, // (item, $original, $container) => { return true|false },
             // onBeforeAddItem: null, // (item) => { return item or false; },
             // onAddItem: null, // ($item, item) => { },
             // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
@@ -624,36 +624,40 @@ class pfDropdown {
 
     _selectItem(item = null)
     {
-        let selectedValues = [],
-            value = "" + item.value;
-        // update original <select>
-        if (this.isMultiple) {
-            selectedValues = this.$original.val() || [];
-            selectedValues.push(value);
-            this.$original.val(selectedValues);
-        } else {
-            selectedValues.push(value);
-            this.$original.val(value);
+        let approve = this._executeCallback('onSelectItem', item, this.$original, this.$container);
+        if (approve !== false) {
+            let selectedValues = [],
+                value = "" + item.value;
+            // update original <select>
+            if (this.isMultiple) {
+                selectedValues = this.$original.val() || [];
+                selectedValues.push(value);
+                this.$original.val(selectedValues);
+            } else {
+                selectedValues.push(value);
+                this.$original.val(value);
+            }
+            this._refreshSelectedItems(selectedValues);
         }
-        this._refreshSelectedItems(selectedValues);
-        this._executeCallback('onSelectItem', item, this.$original, this.$container);
     }
 
 
     _unselectItem(item = null)
     {
-        let selectedValues = [],
-            value = "" + item.value;
-        // update original <select>
-        if (this.isMultiple) {
-            selectedValues = this.$original.val();
-            selectedValues = selectedValues.filter(v => v !== value);
-            this.$original.val(selectedValues);
-        } else {
-            this.$original.find('option:selected').prop('selected', false);
+        let approve = this._executeCallback('onUnselectItem', item, this.$original, this.$container);
+        if (approve !== false) {
+            let selectedValues = [],
+                value = "" + item.value;
+            // update original <select>
+            if (this.isMultiple) {
+                selectedValues = this.$original.val();
+                selectedValues = selectedValues.filter(v => v !== value);
+                this.$original.val(selectedValues);
+            } else {
+                this.$original.find('option:selected').prop('selected', false);
+            }
+            this._refreshSelectedItems(selectedValues);
         }
-        this._refreshSelectedItems(selectedValues);
-        this._executeCallback('onUnselectItem', item, this.$original, this.$container);
     }
 
 
@@ -687,11 +691,12 @@ class pfDropdown {
      */
     _executeCallback(cbName, ...args)
     {
-        let isEvent = (cbName.substring(0, 2) === 'on') ? true : false;
+        let isEvent = (cbName.substring(0, 2) === 'on') ? true : false,
+            result = null;
         // check callbacks from widget settings
         if ($.isFunction(this.settings.callbacks[cbName])) {
             if (isEvent) {
-                this.settings.callbacks[cbName].apply(this, args);
+                result = this.settings.callbacks[cbName].apply(this, args);
             } else {
                 args[0] = this.settings.callbacks[cbName].apply(this, args);
             }
@@ -701,14 +706,14 @@ class pfDropdown {
             for (let plugin of this.settings.plugins) {
                 if (typeof plugin === 'object' && $.isFunction(plugin[cbName])) {
                     if (isEvent) {
-                        plugin[cbName].apply(plugin, args);
+                        result = plugin[cbName].apply(plugin, args);
                     } else {
                         args[0] = plugin[cbName].apply(plugin, args);
                     }
                 }
             }
         }
-        return args[0];
+        return isEvent ? result : args[0];
     }
 
 
