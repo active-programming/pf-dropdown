@@ -8,7 +8,7 @@
     "control",
     "autocomplete"
   ],
-  "version": "0.0.54b",
+  "version": "0.0.55b",
   "main": "distr/js/pf-dropdown.js",
   "description": "PF Dropdown is a jQuery-based custom <select> UI control.",
   "author": "Konstantin Kutsevalov <konstantin@kutsevalov.name>",

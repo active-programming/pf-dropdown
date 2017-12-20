@@ -9971,15 +9971,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } }, { key: "_toggleDropdown", value: function value() {
         var t = this.$container.find(".pf-dropdown-frame");"none" !== t.css("display") ? (t.css("display", "none"), this._executeCallback("onClose", this.$original, this.$container)) : ($("body").trigger("pf-dropdown-click"), this.$container.find(".pf-dropdown-item").length > 0 && (t.css("display", ""), this._executeCallback("onOpen", this.$original, this.$container)));
       } }, { key: "_selectItem", value: function value() {
-        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
-            e = [],
-            i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelectedItems(e), this._executeCallback("onSelectItem", t, this.$original, this.$container);
+        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;if (!1 !== this._executeCallback("onSelectItem", t, this.$original, this.$container)) {
+          var e = [],
+              i = "" + t.value;this.isMultiple ? (e = this.$original.val() || [], e.push(i), this.$original.val(e)) : (e.push(i), this.$original.val(i)), this._refreshSelectedItems(e);
+        }
       } }, { key: "_unselectItem", value: function value() {
-        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null,
-            e = [],
-            i = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
-          return t !== i;
-        }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelectedItems(e), this._executeCallback("onUnselectItem", t, this.$original, this.$container);
+        var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;if (!1 !== this._executeCallback("onUnselectItem", t, this.$original, this.$container)) {
+          var e = [],
+              i = "" + t.value;this.isMultiple ? (e = this.$original.val(), e = e.filter(function (t) {
+            return t !== i;
+          }), this.$original.val(e)) : this.$original.find("option:selected").prop("selected", !1), this._refreshSelectedItems(e);
+        }
       } }, { key: "_refreshSelectedItems", value: function value(t) {
         $(".pf-dropdown-item", this.$container).removeClass("selected");for (var e in this.items) {
           if (this.items[e].selected = !1, t.length > 0) {
@@ -10001,25 +10003,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }this._renderChoice(), this.$original.trigger("change");
       } }, { key: "_executeCallback", value: function value(t) {
-        for (var e = "on" === t.substring(0, 2), i = arguments.length, n = Array(i > 1 ? i - 1 : 0), a = 1; a < i; a++) {
-          n[a - 1] = arguments[a];
-        }if ($.isFunction(this.settings.callbacks[t]) && (e ? this.settings.callbacks[t].apply(this, n) : n[0] = this.settings.callbacks[t].apply(this, n)), this.settings.plugins.length > 0) {
-          var l = !0,
-              o = !1,
-              s = void 0;try {
-            for (var u, c = this.settings.plugins[Symbol.iterator](); !(l = (u = c.next()).done); l = !0) {
-              var d = u.value;"object" === (void 0 === d ? "undefined" : r(d)) && $.isFunction(d[t]) && (e ? d[t].apply(d, n) : n[0] = d[t].apply(d, n));
+        for (var e = "on" === t.substring(0, 2), i = null, n = arguments.length, a = Array(n > 1 ? n - 1 : 0), l = 1; l < n; l++) {
+          a[l - 1] = arguments[l];
+        }if ($.isFunction(this.settings.callbacks[t]) && (e ? i = this.settings.callbacks[t].apply(this, a) : a[0] = this.settings.callbacks[t].apply(this, a)), this.settings.plugins.length > 0) {
+          var o = !0,
+              s = !1,
+              u = void 0;try {
+            for (var c, d = this.settings.plugins[Symbol.iterator](); !(o = (c = d.next()).done); o = !0) {
+              var h = c.value;"object" === (void 0 === h ? "undefined" : r(h)) && $.isFunction(h[t]) && (e ? i = h[t].apply(h, a) : a[0] = h[t].apply(h, a));
             }
           } catch (t) {
-            o = !0, s = t;
+            s = !0, u = t;
           } finally {
             try {
-              !l && c.return && c.return();
+              !o && d.return && d.return();
             } finally {
-              if (o) throw s;
+              if (s) throw u;
             }
           }
-        }return n[0];
+        }return e ? i : a[0];
       } }, { key: "getValue", value: function value() {
         var t = [],
             e = this._getSelectedItems(),
@@ -10075,7 +10077,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/**
- * TODO Plugin example
+ * Plugin example
  */
 
 
@@ -10134,7 +10136,7 @@ exports.default = _class;
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/**
- * TODO Plugin example
+ * Plugin example
  */
 
 
