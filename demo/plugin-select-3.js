@@ -1,5 +1,5 @@
 /**
- * TODO Plugin example
+ * Plugin example
  */
 'use strict';
 import 'jquery';
