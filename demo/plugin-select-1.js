@@ -10,12 +10,12 @@ export default class {
 
     // Events methods
 
-    onOverItem($item, item)
+    onOverItem($item, item, $original, $container)
     {
         $item.css('color', '#fff');
     }
 
-    onLeaveItem($item, item)
+    onLeaveItem($item, item, $original, $container)
     {
         $item.css('color', '');
     }

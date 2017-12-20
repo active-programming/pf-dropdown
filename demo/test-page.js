@@ -9944,10 +9944,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             i = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];if (t = t || !1, !$.isPlainObject(t)) return !1;if ([r(t.index), r(t.value), r(t.title)].includes("undfined")) return !1;var n = $(this.itemTmpl).attr("data-item_value", t.value).attr("data-index", t.index).html(t.title),
             a = this._executeCallback("renderItem", n.clone(), t, this.$original, this.$container, this.settings);return a instanceof $ && a.hasClass("pf-dropdown-item") && a.data("item_value") || (a = n), this.settings.autocomplete && (a = this._hightlight(a, this.$input.val())), i && (t.selected && a.addClass("selected"), a.hover(function (t) {
           var i = $(t.currentTarget),
-              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onOverItem", i, n[0]);
+              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onOverItem", i, n[0], e.$original, e.$container);
         }, function (t) {
           var i = $(t.currentTarget),
-              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onLeaveItem", i, n[0]);
+              n = e._getItemsByValues(i.data("item_value"));n.length > 0 && e._executeCallback("onLeaveItem", i, n[0], e.$original, e.$container);
         }), a.on("click", function (t) {
           t.preventDefault(), t.stopPropagation();var i = $(t.currentTarget),
               n = e._getItemsByValues(i.data("item_value"));n.length > 0 && (e.isMultiple && n[0].selected ? e._unselectItem(n[0]) : e._selectItem(n[0])), !0 === e.settings.closeOnSelect && e._toggleDropdown();
@@ -10098,12 +10098,12 @@ var _class = function () {
 
     _createClass(_class, [{
         key: 'onOverItem',
-        value: function onOverItem($item, item) {
+        value: function onOverItem($item, item, $original, $container) {
             $item.css('color', '#fff');
         }
     }, {
         key: 'onLeaveItem',
-        value: function onLeaveItem($item, item) {
+        value: function onLeaveItem($item, item, $original, $container) {
             $item.css('color', '');
         }
     }, {

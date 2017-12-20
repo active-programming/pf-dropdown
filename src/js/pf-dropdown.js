@@ -51,8 +51,8 @@ class pfDropdown {
             onRendered: null, // ($original, $container) => { },
             onClose: null, // ($original, $container) => { },
             onOpen: null, // ($original, $container) => { },
-            onOverItem: null, // ($item, item) => { },
-            onLeaveItem: null, // ($item, item) => { },
+            onOverItem: null, // ($item, item, $original, $container) => { },
+            onLeaveItem: null, // ($item, item, $original, $container) => { },
             onSelectItem: null, // (item, $original, $container) => { },
             onUnselectItem: null, // (item, $original, $container) => { },
             // onBeforeAddItem: null, // (item) => { return item or false; },
@@ -495,14 +495,14 @@ class pfDropdown {
                     let $item = $(event.currentTarget),
                         items = this._getItemsByValues($item.data('item_value'));
                     if (items.length > 0) {
-                        this._executeCallback('onOverItem', $item, items[0]);
+                        this._executeCallback('onOverItem', $item, items[0], this.$original, this.$container);
                     }
                 },
                 (event) => {
                     let $item = $(event.currentTarget),
                         items = this._getItemsByValues($item.data('item_value'));
                     if (items.length > 0) {
-                        this._executeCallback('onLeaveItem', $item, items[0]);
+                        this._executeCallback('onLeaveItem', $item, items[0], this.$original, this.$container);
                     }
                 }
             );

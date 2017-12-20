@@ -33,12 +33,12 @@ export default class {
 
     }
 
-    onOverItem($item, item)
+    onOverItem($item, item, $original, $container)
     {
 
     }
 
-    onLeaveItem($item, item)
+    onLeaveItem($item, item, $original, $container)
     {
 
     }
