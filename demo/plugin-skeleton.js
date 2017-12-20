@@ -48,9 +48,19 @@ export default class {
 
     }
 
+    selectionFilter(item, $original, $container)
+    {
+        // return false if you don't like selected value and it won't be selected
+    }
+
     onSelectItem(item, $original, $container)
     {
 
+    }
+
+    unselectionFilter(item, $original, $container)
+    {
+        // return false if you like selected value and it won't be unselected
     }
 
     onUnselectItem(item, $original, $container)

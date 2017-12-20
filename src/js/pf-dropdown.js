@@ -53,8 +53,8 @@ class pfDropdown {
             onOpen: null, // ($original, $container) => { },
             onOverItem: null, // ($item, item, $original, $container) => { },
             onLeaveItem: null, // ($item, item, $original, $container) => { },
-            onSelectItem: null, // (item, $original, $container) => { return true|false },
-            onUnselectItem: null, // (item, $original, $container) => { return true|false },
+            onSelectItem: null, // (item, $original, $container) => { },
+            onUnselectItem: null, // (item, $original, $container) => { },
             // onBeforeAddItem: null, // (item) => { return item or false; },
             // onAddItem: null, // ($item, item) => { },
             // onBeforeDeleteItem: null, //($item, item) => { return true of false; },
@@ -64,6 +64,8 @@ class pfDropdown {
             renderItem: null, // ($item, item, $original, $container, settings) => { return $item; },
             renderGroup: null, // ($group, group, $items, $original, $container, settings) => { return $group; },
             renderChoice: null, // ($view, items, $original, $container, settings) => { return $view; },
+            selectionFilter: null, // (item, $original, $container) => { return true|false },
+            unselectionFilter: null, // (item, $original, $container) => { return true|false },
             ajaxDataBuilder: null, // (currentData, $original, $container, settings) => { return currentData; },
             ajaxResponseFilter: null, //(json, settings) => { return json; },
             newItemsFilter: null //(json, settings) => { return json; },
@@ -624,8 +626,8 @@ class pfDropdown {
 
     _selectItem(item = null)
     {
-        let approve = this._executeCallback('onSelectItem', item, this.$original, this.$container);
-        if (approve !== false) {
+        let approvement = this._executeCallback('selectionFilter', item, this.$original, this.$container);
+        if (approvement !== false) {
             let selectedValues = [],
                 value = "" + item.value;
             // update original <select>
@@ -638,14 +640,15 @@ class pfDropdown {
                 this.$original.val(value);
             }
             this._refreshSelectedItems(selectedValues);
+            this._executeCallback('onSelectItem', item, this.$original, this.$container)
         }
     }
 
 
     _unselectItem(item = null)
     {
-        let approve = this._executeCallback('onUnselectItem', item, this.$original, this.$container);
-        if (approve !== false) {
+        let approvement = this._executeCallback('unselectionFilter', item, this.$original, this.$container);
+        if (approvement !== false) {
             let selectedValues = [],
                 value = "" + item.value;
             // update original <select>
@@ -657,6 +660,7 @@ class pfDropdown {
                 this.$original.find('option:selected').prop('selected', false);
             }
             this._refreshSelectedItems(selectedValues);
+            this._executeCallback('onUnselectItem', item, this.$original, this.$container)
         }
     }
 
